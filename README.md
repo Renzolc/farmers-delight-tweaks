@@ -49,7 +49,8 @@ Processing priority:
 1. **Planks → wooden slabs** (1 plank → 2 matching slabs)
 2. **Wooden slabs → sticks** (1 slab → 1 stick; run wood through twice for the old stick rate)
 3. **Beds → 3 matching wool + 3 oak planks**
-4. **All Farmer's Delight cutting-board recipes** (matched by input item only)
-5. Reverse crafting as fallback for items with no cutting recipe
+4. **Mob heads → matching spawn eggs** (1 head → 1 egg; vanilla heads plus modded `_head`/`_skull` names when the egg exists)
+5. **All Farmer's Delight cutting-board recipes** (matched by input item only)
+6. Reverse crafting as fallback for items with no cutting recipe
 
 Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).

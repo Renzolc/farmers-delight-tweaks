@@ -60,6 +60,9 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     /** Bed → matching wool color (1 bed → 3 wool + 3 oak planks). */
     private static final Map<Item, Item> BED_TO_WOOL = createBedToWoolMap();
 
+    /** Vanilla mob head → matching spawn egg (1 head → 1 egg). */
+    private static final Map<Item, Item> MOB_HEAD_TO_SPAWN_EGG = createMobHeadToSpawnEggMap();
+
     private final ItemStackHandler items = new ItemStackHandler(TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -188,8 +191,9 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
      * 1) plank → wooden slabs
      * 2) wooden slab → stick
      * 3) bed → 3 matching wool + 3 oak planks
-     * 4) Farmer's Delight cutting-board recipes (input match only; tools built into machine)
-     * 5) reverse crafting fallback (skips damaged tools/armor)
+     * 4) mob heads → matching spawn eggs
+     * 5) Farmer's Delight cutting-board recipes (input match only; tools built into machine)
+     * 6) reverse crafting fallback (skips damaged tools/armor)
      */
     private Optional<ResolvedDecraft> resolveDecraft(ItemStack input) {
         Optional<List<ItemStack>> wood = resolveWoodChain(input);
@@ -200,6 +204,11 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         Optional<List<ItemStack>> bed = resolveBed(input);
         if (bed.isPresent()) {
             return Optional.of(new ResolvedDecraft(bed.get(), 1));
+        }
+
+        Optional<List<ItemStack>> mobHead = resolveMobHead(input);
+        if (mobHead.isPresent()) {
+            return Optional.of(new ResolvedDecraft(mobHead.get(), 1));
         }
 
         Optional<List<ItemStack>> cutting = resolveCutting(input);
@@ -248,6 +257,40 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
                 new ItemStack(wool, 3),
                 new ItemStack(Items.OAK_PLANKS, 3)
         ));
+    }
+
+    /** Mob heads → matching spawn eggs, with a same-namespace fallback for modded heads. */
+    private Optional<List<ItemStack>> resolveMobHead(ItemStack input) {
+        Item spawnEgg = MOB_HEAD_TO_SPAWN_EGG.get(input.getItem());
+        if (spawnEgg != null && spawnEgg != Items.AIR) {
+            return Optional.of(List.of(new ItemStack(spawnEgg, 1)));
+        }
+
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(input.getItem());
+        if (id == null || id.getPath().equals("player_head")) {
+            return Optional.empty();
+        }
+        String path = id.getPath();
+        String suffix;
+        if (path.endsWith("_head")) {
+            suffix = "_head";
+        } else if (path.endsWith("_skull")) {
+            suffix = "_skull";
+        } else {
+            return Optional.empty();
+        }
+        String base = path.substring(0, path.length() - suffix.length());
+        if (base.isEmpty()) {
+            return Optional.empty();
+        }
+        ResourceLocation spawnEggId = ResourceLocation.fromNamespaceAndPath(
+                id.getNamespace(), base + "_spawn_egg"
+        );
+        spawnEgg = BuiltInRegistries.ITEM.get(spawnEggId);
+        if (spawnEgg == Items.AIR) {
+            return Optional.empty();
+        }
+        return Optional.of(List.of(new ItemStack(spawnEgg, 1)));
     }
 
     /**
@@ -505,6 +548,17 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         map.put(Items.GREEN_BED, Items.GREEN_WOOL);
         map.put(Items.RED_BED, Items.RED_WOOL);
         map.put(Items.BLACK_BED, Items.BLACK_WOOL);
+        return Map.copyOf(map);
+    }
+
+    private static Map<Item, Item> createMobHeadToSpawnEggMap() {
+        Map<Item, Item> map = new HashMap<>();
+        map.put(Items.SKELETON_SKULL, Items.SKELETON_SPAWN_EGG);
+        map.put(Items.WITHER_SKELETON_SKULL, Items.WITHER_SKELETON_SPAWN_EGG);
+        map.put(Items.ZOMBIE_HEAD, Items.ZOMBIE_SPAWN_EGG);
+        map.put(Items.CREEPER_HEAD, Items.CREEPER_SPAWN_EGG);
+        map.put(Items.PIGLIN_HEAD, Items.PIGLIN_SPAWN_EGG);
+        map.put(Items.DRAGON_HEAD, Items.ENDER_DRAGON_SPAWN_EGG);
         return Map.copyOf(map);
     }
 
