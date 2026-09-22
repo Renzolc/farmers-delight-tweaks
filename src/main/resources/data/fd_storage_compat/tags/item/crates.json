@@ -13,6 +13,8 @@
     "fd_storage_compat:glow_berry_crate",
     "fd_storage_compat:nether_wart_crate",
     "fd_storage_compat:sugar_cane_crate",
-    "fd_storage_compat:sweet_berry_crate"
+    "fd_storage_compat:sweet_berry_crate",
+    "fd_storage_compat:cinnamon_stick_crate",
+    "fd_storage_compat:durian_crate"
   ]
 }

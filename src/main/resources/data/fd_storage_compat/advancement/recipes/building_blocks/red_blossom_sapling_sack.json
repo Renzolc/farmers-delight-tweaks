@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "quark"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_quark_red_blossom_sapling": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "quark:red_blossom_sapling"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:red_blossom_sapling_sack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_quark_red_blossom_sapling"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:red_blossom_sapling_sack"
+    ]
+  }
+}

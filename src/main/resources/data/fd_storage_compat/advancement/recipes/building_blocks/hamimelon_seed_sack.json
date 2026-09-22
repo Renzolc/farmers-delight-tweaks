@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "fruitsdelight"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_fruitsdelight_hamimelon_seeds": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "fruitsdelight:hamimelon_seeds"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:hamimelon_seed_sack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_fruitsdelight_hamimelon_seeds"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:hamimelon_seed_sack"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "quark"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "show_notification": true,
+  "key": {
+    "#": {
+      "item": "quark:blue_blossom_sapling"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "fd_storage_compat:blue_blossom_sapling_sack"
+  }
+}

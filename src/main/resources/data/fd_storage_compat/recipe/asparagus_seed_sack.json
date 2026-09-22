@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "expandeddelight"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "show_notification": true,
+  "key": {
+    "#": {
+      "item": "expandeddelight:asparagus_seeds"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "fd_storage_compat:asparagus_seed_sack"
+  }
+}

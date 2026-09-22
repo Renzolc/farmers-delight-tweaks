@@ -5,6 +5,7 @@ NeoForge 1.21.1 add-on for [Farmer's Delight](https://github.com/vectorwing/Farm
 ## Features
 
 - Storage crates and sacks for missing vanilla foods, seeds, and saplings
+- Modded seed/sapling sacks + produce crates for Cultural / Veggies / Expanded / Fruits / Crabber's Delight, Quark blossom+ancient saplings, and Supplementaries flax seeds (recipes gated with `neoforge:mod_loaded`)
 - Cutting-board uncrafts for FD rope/canvas/net/fences and knives
 - Pack-compat cutting recipes for Supplementaries fiber/decor, Quark rope, More Delight knives, and Handcrafted sheets
 

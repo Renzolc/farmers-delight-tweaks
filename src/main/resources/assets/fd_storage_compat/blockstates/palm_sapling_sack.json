@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "fd_storage_compat:block/palm_sapling_sack"
+    }
+  }
+}

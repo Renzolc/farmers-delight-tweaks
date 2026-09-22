@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "fruitsdelight"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_fd_storage_compat_lychee_sapling_sack": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "fd_storage_compat:lychee_sapling_sack"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:lychee_sapling_from_sack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_fd_storage_compat_lychee_sapling_sack"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:lychee_sapling_from_sack"
+    ]
+  }
+}

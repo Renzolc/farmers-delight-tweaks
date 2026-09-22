@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "culturaldelights"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_culturaldelights_avocado_pit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "culturaldelights:avocado_pit"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:avocado_pit_seed_sack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_culturaldelights_avocado_pit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:avocado_pit_seed_sack"
+    ]
+  }
+}

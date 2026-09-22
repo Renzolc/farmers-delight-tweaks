@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_cutting_board": {
+    "has_crate": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "farmersdelight:cutting_board"
+            "items": "#fd_storage_compat:crates"
           }
         ]
       }
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_cutting_board"
+      "has_crate"
     ]
   ],
   "rewards": {

@@ -52,6 +52,49 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHERRY_SAPLING_SACK = sack("cherry_sapling_sack");
     public static final DeferredBlock<Block> MANGROVE_PROPAGULE_SACK = sack("mangrove_propagule_sack");
 
+
+    // Modded seed sacks / sapling sacks / produce crates (compat; recipes gated by mod_loaded)
+    public static final DeferredBlock<Block> CUCUMBER_SEED_SACK = sack("cucumber_seed_sack");
+    public static final DeferredBlock<Block> EGGPLANT_SEED_SACK = sack("eggplant_seed_sack");
+    public static final DeferredBlock<Block> CORN_KERNEL_SEED_SACK = sack("corn_kernel_seed_sack");
+    public static final DeferredBlock<Block> AVOCADO_PIT_SEED_SACK = sack("avocado_pit_seed_sack");
+    public static final DeferredBlock<Block> AVOCADO_SAPLING_SACK = sack("avocado_sapling_sack");
+    public static final DeferredBlock<Block> BELLPEPPER_SEED_SACK = sack("bellpepper_seed_sack");
+    public static final DeferredBlock<Block> BROCCOLI_SEED_SACK = sack("broccoli_seed_sack");
+    public static final DeferredBlock<Block> CAULIFLOWER_SEED_SACK = sack("cauliflower_seed_sack");
+    public static final DeferredBlock<Block> TURNIP_SEED_SACK = sack("turnip_seed_sack");
+    public static final DeferredBlock<Block> ZUCCHINI_SEED_SACK = sack("zucchini_seed_sack");
+    public static final DeferredBlock<Block> GARLIC_CLOVE_SEED_SACK = sack("garlic_clove_seed_sack");
+    public static final DeferredBlock<Block> ASPARAGUS_SEED_SACK = sack("asparagus_seed_sack");
+    public static final DeferredBlock<Block> CHILI_PEPPER_SEED_SACK = sack("chili_pepper_seed_sack");
+    public static final DeferredBlock<Block> CINNAMON_SAPLING_SACK = sack("cinnamon_sapling_sack");
+    public static final DeferredBlock<Block> CINNAMON_STICK_CRATE = crate("cinnamon_stick_crate");
+    public static final DeferredBlock<Block> APPLE_SAPLING_SACK = sack("apple_sapling_sack");
+    public static final DeferredBlock<Block> BAYBERRY_SAPLING_SACK = sack("bayberry_sapling_sack");
+    public static final DeferredBlock<Block> FIG_SAPLING_SACK = sack("fig_sapling_sack");
+    public static final DeferredBlock<Block> HAWBERRY_SAPLING_SACK = sack("hawberry_sapling_sack");
+    public static final DeferredBlock<Block> KIWI_SAPLING_SACK = sack("kiwi_sapling_sack");
+    public static final DeferredBlock<Block> LYCHEE_SAPLING_SACK = sack("lychee_sapling_sack");
+    public static final DeferredBlock<Block> MANGO_SAPLING_SACK = sack("mango_sapling_sack");
+    public static final DeferredBlock<Block> MANGOSTEEN_SAPLING_SACK = sack("mangosteen_sapling_sack");
+    public static final DeferredBlock<Block> ORANGE_SAPLING_SACK = sack("orange_sapling_sack");
+    public static final DeferredBlock<Block> PEACH_SAPLING_SACK = sack("peach_sapling_sack");
+    public static final DeferredBlock<Block> PEAR_SAPLING_SACK = sack("pear_sapling_sack");
+    public static final DeferredBlock<Block> PERSIMMON_SAPLING_SACK = sack("persimmon_sapling_sack");
+    public static final DeferredBlock<Block> PINEAPPLE_SAPLING_SACK = sack("pineapple_sapling_sack");
+    public static final DeferredBlock<Block> DURIAN_SAPLING_SACK = sack("durian_sapling_sack");
+    public static final DeferredBlock<Block> LEMON_SEED_SACK = sack("lemon_seed_sack");
+    public static final DeferredBlock<Block> HAMIMELON_SEED_SACK = sack("hamimelon_seed_sack");
+    public static final DeferredBlock<Block> DURIAN_CRATE = crate("durian_crate");
+    public static final DeferredBlock<Block> PALM_SAPLING_SACK = sack("palm_sapling_sack");
+    public static final DeferredBlock<Block> ANCIENT_SAPLING_SACK = sack("ancient_sapling_sack");
+    public static final DeferredBlock<Block> BLUE_BLOSSOM_SAPLING_SACK = sack("blue_blossom_sapling_sack");
+    public static final DeferredBlock<Block> LAVENDER_BLOSSOM_SAPLING_SACK = sack("lavender_blossom_sapling_sack");
+    public static final DeferredBlock<Block> ORANGE_BLOSSOM_SAPLING_SACK = sack("orange_blossom_sapling_sack");
+    public static final DeferredBlock<Block> RED_BLOSSOM_SAPLING_SACK = sack("red_blossom_sapling_sack");
+    public static final DeferredBlock<Block> YELLOW_BLOSSOM_SAPLING_SACK = sack("yellow_blossom_sapling_sack");
+    public static final DeferredBlock<Block> FLAX_SEED_SACK = sack("flax_seed_sack");
+
     private ModBlocks() {}
 
     private static DeferredBlock<Block> crate(String name) {
