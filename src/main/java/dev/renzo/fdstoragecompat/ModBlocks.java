@@ -22,7 +22,7 @@ public final class ModBlocks {
 
     
     public static final DeferredBlock<Block> DECRAFTER = BLOCKS.register("decrafter",
-            () -> new DecrafterBlock(storageProps()));
+            () -> new DecrafterBlock(decrafterProps()));
 
     // Food crates
     public static final DeferredBlock<Block> APPLE_CRATE = crate("apple_crate");
@@ -66,6 +66,16 @@ public final class ModBlocks {
         DeferredBlock<Block> block = BLOCKS.register(name, supplier);
         ALL.add(block);
         return block;
+    }
+
+    /** Like a crafting table: breakable by hand; axe preferred via #minecraft:mineable/axe. */
+    private static BlockBehaviour.Properties decrafterProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.WOOD)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.5F)
+                .sound(SoundType.WOOD)
+                .ignitedByLava();
     }
 
     private static BlockBehaviour.Properties storageProps() {
