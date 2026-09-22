@@ -1,6 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "building",
+  "show_notification": true,
   "key": {
     "#": {
       "item": "minecraft:acacia_sapling"

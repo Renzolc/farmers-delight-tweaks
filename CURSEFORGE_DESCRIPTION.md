@@ -14,12 +14,15 @@ NeoForge 1.21.1 companion for [Farmer's Delight](https://www.curseforge.com/mine
 - Salvage FD / More Delight knives with a **pickaxe**
 - Extra uncrafts for common pack decor (e.g. Supplementaries fiber items)
 
-### Decrafter (1.0.5)
-Craft with **6 cutting boards + knife + axe + pickaxe**.
+### Decrafter (1.0.6)
+Craft with **axe + crate + pickaxe / knife + shears** (`ACP` / `K S`).
 - Hopper in from top/sides, out from bottom
-- Right-click GUI
+- Right-click GUI (fixed texture + slot layout)
 - Automatically reverse-crafts items into their recipe ingredients
 - Planks special-case: 1 plank → 2 sticks
+
+### Recipe book (1.0.6)
+Crafting recipes auto-unlock when you pick up the required items (crates/sacks unlock their unpack recipes).
 
 ### Pack integrations
 Shared tags/recipes so Cultural Delight, Miner's Delight, More Delight, Veggies Delight, Brewin' and Chewin', and Some Assembly Required ingredients interchange where it makes sense (squid/calamari, cheese, bread slices, cut veggies, dough/tomato bridges). Works **alongside** Compat Delight — we fill FD-addon gaps, not Create/Ad Astra bridges.

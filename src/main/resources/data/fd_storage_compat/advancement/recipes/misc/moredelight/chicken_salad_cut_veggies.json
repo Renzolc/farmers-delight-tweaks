@@ -1,0 +1,82 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "moredelight"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_minecraft_bowl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:bowl"
+          }
+        ]
+      }
+    },
+    "has_c_crops_cabbage": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:crops/cabbage"
+          }
+        ]
+      }
+    },
+    "has_fd_storage_compat_cut_vegetables": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#fd_storage_compat:cut_vegetables"
+          }
+        ]
+      }
+    },
+    "has_c_foods_cooked_chicken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:foods/cooked_chicken"
+          }
+        ]
+      }
+    },
+    "has_c_crops_onion": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:crops/onion"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:moredelight/chicken_salad_cut_veggies"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_minecraft_bowl",
+      "has_c_crops_cabbage",
+      "has_fd_storage_compat_cut_vegetables",
+      "has_c_foods_cooked_chicken",
+      "has_c_crops_onion"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:moredelight/chicken_salad_cut_veggies"
+    ]
+  }
+}

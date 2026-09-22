@@ -30,6 +30,19 @@ Crate bottom / bag layout textures are derived from Farmer's Delight assets (vec
 
 ## Decrafter
 
-Craft with 6 cutting boards, a knife, an axe, and a pickaxe (`CCC / KAP / CCC`).
+Craft on a crafting table with:
+
+```
+A C P
+K   S
+```
+
+- `A` = any axe (`#minecraft:axes`)
+- `C` = any crate (`#fd_storage_compat:crates` — Farmer's Delight crates/rice bag + this mod's food crates)
+- `P` = any pickaxe (`#minecraft:pickaxes`)
+- `K` = any knife (`#c:tools/knife`)
+- `S` = shears (`minecraft:shears`)
 
 Hopper-fed auto-uncrafter: insert from top/sides, extract from bottom. Right-click for a GUI. Reverses crafting recipes; planks special-case to 2 sticks.
+
+Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).

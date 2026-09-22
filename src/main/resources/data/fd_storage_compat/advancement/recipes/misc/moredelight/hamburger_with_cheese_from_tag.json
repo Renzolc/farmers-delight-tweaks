@@ -1,0 +1,60 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "moredelight"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_c_foods_bread": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:foods/bread"
+          }
+        ]
+      }
+    },
+    "has_farmersdelight_beef_patty": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "farmersdelight:beef_patty"
+          }
+        ]
+      }
+    },
+    "has_c_foods_cheese": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:foods/cheese"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:moredelight/hamburger_with_cheese_from_tag"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_c_foods_bread",
+      "has_farmersdelight_beef_patty",
+      "has_c_foods_cheese"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:moredelight/hamburger_with_cheese_from_tag"
+    ]
+  }
+}

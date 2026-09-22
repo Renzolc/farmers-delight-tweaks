@@ -1,0 +1,60 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "culturaldelights"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_minecraft_dried_kelp": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:dried_kelp"
+          }
+        ]
+      }
+    },
+    "has_farmersdelight_cooked_rice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "farmersdelight:cooked_rice"
+          }
+        ]
+      }
+    },
+    "has_c_foods_raw_calamari": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:foods/raw_calamari"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:culturaldelights/calamari_roll_from_tag"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_minecraft_dried_kelp",
+      "has_farmersdelight_cooked_rice",
+      "has_c_foods_raw_calamari"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:culturaldelights/calamari_roll_from_tag"
+    ]
+  }
+}

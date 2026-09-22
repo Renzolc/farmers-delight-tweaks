@@ -16,14 +16,16 @@ public class DecrafterScreen extends AbstractContainerScreen<DecrafterMenu> {
     public DecrafterScreen(DecrafterMenu menu, Inventory playerInv, Component title) {
         super(menu, playerInv, title);
         this.imageWidth = 176;
-        this.imageHeight = 166;
+        this.imageHeight = 186;
+        this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
-        graphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight);
+        // Texture is 176x186 (not a 256x256 atlas) — pass explicit texture size
+        graphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
     }
 
     @Override

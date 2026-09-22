@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_minecraft_melon_seeds": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:melon_seeds"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:melon_seed_sack"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_minecraft_melon_seeds"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:melon_seed_sack"
+    ]
+  }
+}
