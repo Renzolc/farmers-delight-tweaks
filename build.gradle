@@ -63,6 +63,8 @@ configurations {
 }
 
 dependencies {
+    // Farmer's Delight API at compile time only (runtime provided by the game; do not shade).
+    compileOnly files('libs/FarmersDelight.jar')
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

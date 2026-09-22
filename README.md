@@ -43,6 +43,13 @@ K   S
 - `K` = any knife (`#c:tools/knife`)
 - `S` = shears (`minecraft:shears`)
 
-Hopper-fed auto-uncrafter: insert from top/sides, extract from bottom. Right-click for a GUI. Reverses crafting recipes; planks special-case to 2 sticks.
+Hopper-fed **auto cutting board** (tools built into the machine — no tool slot in the GUI): insert from top/sides, extract from bottom. Right-click for a GUI.
+
+Processing priority:
+1. **Planks → wooden slabs** (1 plank → 2 matching slabs)
+2. **Wooden slabs → sticks** (1 slab → 1 stick; run wood through twice for the old stick rate)
+3. **Beds → 3 matching wool + 3 oak planks**
+4. **All Farmer's Delight cutting-board recipes** (matched by input item only)
+5. Reverse crafting as fallback for items with no cutting recipe
 
 Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).
