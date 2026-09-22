@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "fd_storage_compat:block/dark_oak_sapling_sack_bottom",
+    "east": "fd_storage_compat:block/dark_oak_sapling_sack_side",
+    "north": "fd_storage_compat:block/dark_oak_sapling_sack_side_tied",
+    "particle": "fd_storage_compat:block/dark_oak_sapling_sack_top",
+    "south": "fd_storage_compat:block/dark_oak_sapling_sack_side_tied",
+    "up": "fd_storage_compat:block/dark_oak_sapling_sack_top",
+    "west": "fd_storage_compat:block/dark_oak_sapling_sack_side"
+  }
+}

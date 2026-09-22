@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "fd_storage_compat:block/crate_bottom",
+    "side": "fd_storage_compat:block/nether_wart_crate_side",
+    "top": "fd_storage_compat:block/nether_wart_crate_top"
+  }
+}

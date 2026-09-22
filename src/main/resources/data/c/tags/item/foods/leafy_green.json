@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "veggiesdelight:dandelion_leaf",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_cucumber",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_pickle",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:pickle",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "fd_storage_compat:torchflower_seed_sack"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "minecraft:torchflower_seeds"
+  }
+}

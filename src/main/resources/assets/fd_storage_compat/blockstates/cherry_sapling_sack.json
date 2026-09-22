@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "fd_storage_compat:block/cherry_sapling_sack"
+    }
+  }
+}

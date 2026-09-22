@@ -1,0 +1,24 @@
+{
+  "values": [
+    {
+      "id": "culturaldelights:cheese_wedge",
+      "required": false
+    },
+    {
+      "id": "brewinandchewin:flaxen_cheese_wedge",
+      "required": false
+    },
+    {
+      "id": "brewinandchewin:scarlet_cheese_wedge",
+      "required": false
+    },
+    {
+      "id": "#brewinandchewin:foods/cheese_wedge",
+      "required": false
+    },
+    {
+      "id": "#culturaldelights:cheese_wedges",
+      "required": false
+    }
+  ]
+}

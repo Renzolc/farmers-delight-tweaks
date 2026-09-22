@@ -1,0 +1,60 @@
+{
+  "values": [
+    {
+      "id": "culturaldelights:cut_cucumber",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_avocado",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_eggplant",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_pickle",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:pickle",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:zucchini_slice",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:cauliflower_floret",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:garlic_clove",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:dandelion_leaf",
+      "required": false
+    },
+    {
+      "id": "moredelight:diced_potatoes",
+      "required": false
+    },
+    {
+      "id": "someassemblyrequired:tomato_slices",
+      "required": false
+    },
+    {
+      "id": "someassemblyrequired:sliced_onion",
+      "required": false
+    },
+    {
+      "id": "someassemblyrequired:chopped_carrot",
+      "required": false
+    },
+    {
+      "id": "farmersdelight:cabbage_leaf",
+      "required": false
+    }
+  ]
+}

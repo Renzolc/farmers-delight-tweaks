@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "moredelight"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:foods/cheese"
+    },
+    {
+      "item": "moredelight:toast"
+    }
+  ],
+  "result": {
+    "id": "moredelight:toast_with_cheese",
+    "count": 1
+  }
+}

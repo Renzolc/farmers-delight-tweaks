@@ -1,0 +1,10 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "minersdelight"
+    }
+  ],
+  "item": "minersdelight:baked_squid",
+  "render_as_item": true
+}
