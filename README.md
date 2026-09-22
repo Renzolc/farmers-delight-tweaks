@@ -33,15 +33,15 @@ Crate bottom / bag layout textures are derived from Farmer's Delight assets (vec
 Craft on a crafting table with:
 
 ```
-A C P
-K   S
+C C C
+K A P
+C C C
 ```
 
-- `A` = any axe (`#minecraft:axes`)
-- `C` = any crate (`#fd_storage_compat:crates` — Farmer's Delight crates/rice bag + this mod's food crates)
-- `P` = any pickaxe (`#minecraft:pickaxes`)
+- `C` = cutting board
 - `K` = any knife (`#c:tools/knife`)
-- `S` = shears (`minecraft:shears`)
+- `A` = any axe (`#minecraft:axes`)
+- `P` = any pickaxe (`#minecraft:pickaxes`)
 
 Hopper-fed **auto cutting board** (tools built into the machine — no tool slot in the GUI): insert from top/sides, extract from bottom. Right-click for a GUI.
 

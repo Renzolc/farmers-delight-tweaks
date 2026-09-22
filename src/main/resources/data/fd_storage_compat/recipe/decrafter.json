@@ -3,25 +3,23 @@
   "category": "misc",
   "show_notification": true,
   "key": {
-    "A": {
-      "tag": "minecraft:axes"
-    },
     "C": {
-      "tag": "fd_storage_compat:crates"
-    },
-    "P": {
-      "tag": "minecraft:pickaxes"
+      "item": "farmersdelight:cutting_board"
     },
     "K": {
       "tag": "c:tools/knife"
     },
-    "S": {
-      "item": "minecraft:shears"
+    "A": {
+      "tag": "minecraft:axes"
+    },
+    "P": {
+      "tag": "minecraft:pickaxes"
     }
   },
   "pattern": [
-    "ACP",
-    "K S"
+    "CCC",
+    "KAP",
+    "CCC"
   ],
   "result": {
     "count": 1,
