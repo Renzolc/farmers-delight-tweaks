@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "culturaldelights:cooked_squid",
+      "required": false
+    },
+    {
+      "id": "minersdelight:baked_squid",
+      "required": false
+    }
+  ]
+}

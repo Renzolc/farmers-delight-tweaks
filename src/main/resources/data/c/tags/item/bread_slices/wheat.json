@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "moredelight:bread_slice",
+      "required": false
+    },
+    {
+      "id": "moredelight:toast",
+      "required": false
+    },
+    {
+      "id": "someassemblyrequired:bread_slice",
+      "required": false
+    },
+    {
+      "id": "someassemblyrequired:toasted_bread_slice",
+      "required": false
+    }
+  ]
+}

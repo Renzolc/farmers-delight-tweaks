@@ -1,0 +1,29 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    { "item": "farmersdelight:iron_knife" }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:stick"
+      }
+    },
+    {
+      "item": {
+        "count": 3,
+        "id": "minecraft:iron_nugget"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ]
+}

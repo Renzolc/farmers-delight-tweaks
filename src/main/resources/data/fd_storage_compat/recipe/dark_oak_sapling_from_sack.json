@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "fd_storage_compat:dark_oak_sapling_sack"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "minecraft:dark_oak_sapling"
+  }
+}

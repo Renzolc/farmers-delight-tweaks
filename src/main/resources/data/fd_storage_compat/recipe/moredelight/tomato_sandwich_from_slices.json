@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:and",
+      "values": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "moredelight"
+        },
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "someassemblyrequired"
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:bread_slices"
+    },
+    {
+      "tag": "c:bread_slices"
+    },
+    {
+      "item": "someassemblyrequired:tomato_slices"
+    }
+  ],
+  "result": {
+    "id": "moredelight:tomato_sandwich",
+    "count": 1
+  }
+}

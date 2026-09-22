@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "fd_storage_compat:tomato_seed_sack"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "farmersdelight:tomato_seeds"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "values": [
+    {
+      "id": "culturaldelights:squid",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:glow_squid",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cooked_squid",
+      "required": false
+    },
+    {
+      "id": "minersdelight:squid",
+      "required": false
+    },
+    {
+      "id": "minersdelight:glow_squid",
+      "required": false
+    },
+    {
+      "id": "minersdelight:baked_squid",
+      "required": false
+    }
+  ]
+}

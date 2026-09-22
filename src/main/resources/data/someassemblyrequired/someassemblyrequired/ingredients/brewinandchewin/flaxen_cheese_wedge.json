@@ -1,0 +1,10 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "brewinandchewin"
+    }
+  ],
+  "item": "brewinandchewin:flaxen_cheese_wedge",
+  "render_as_item": true
+}

@@ -1,0 +1,36 @@
+{
+  "values": [
+    {
+      "id": "culturaldelights:cut_avocado",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_cucumber",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_eggplant",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:cut_pickle",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:zucchini_slice",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:cauliflower_floret",
+      "required": false
+    },
+    {
+      "id": "minersdelight:tentacles",
+      "required": false
+    },
+    {
+      "id": "culturaldelights:raw_calamari",
+      "required": false
+    }
+  ]
+}

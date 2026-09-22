@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "fd_storage_compat:block/crate_bottom",
+    "side": "fd_storage_compat:block/glow_berry_crate_side",
+    "top": "fd_storage_compat:block/glow_berry_crate_top"
+  }
+}

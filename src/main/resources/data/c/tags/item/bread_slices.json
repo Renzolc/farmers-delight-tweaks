@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#c:bread_slices/wheat",
+    {
+      "id": "#c:foods/bread_slice",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "culturaldelights:corn_dough",
+      "required": false
+    },
+    {
+      "id": "farmersdelight:wheat_dough",
+      "required": false
+    },
+    {
+      "id": "veggiesdelight:sweet_potato_dough",
+      "required": false
+    }
+  ]
+}
