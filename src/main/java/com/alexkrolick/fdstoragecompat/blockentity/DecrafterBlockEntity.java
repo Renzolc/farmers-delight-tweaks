@@ -2,7 +2,9 @@ package com.alexkrolick.fdstoragecompat.blockentity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -15,13 +17,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -36,11 +41,24 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RangedWrapper;
 
+import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipe;
+import vectorwing.farmersdelight.common.registry.ModRecipeTypes;
+
+/**
+ * Hopper-fed auto cutting board (+ wood breakdown + bed uncraft + reverse-craft fallback).
+ * Tools are built into the machine craft recipe — cutting matches by input ingredient only.
+ */
 public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOTS = 9;
     public static final int TOTAL_SLOTS = 1 + OUTPUT_SLOTS;
     public static final int PROCESS_INTERVAL = 20; // 1 second
+
+    /** Vanilla plank → matching wooden slab (1 plank → 2 slabs). */
+    private static final Map<Item, Item> PLANK_TO_SLAB = createPlankToSlabMap();
+
+    /** Bed → matching wool color (1 bed → 3 wool + 3 oak planks). */
+    private static final Map<Item, Item> BED_TO_WOOL = createBedToWoolMap();
 
     private final ItemStackHandler items = new ItemStackHandler(TOTAL_SLOTS) {
         @Override
@@ -141,22 +159,18 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         if (input.is(ModBlocks.DECRAFTER.asItem())) {
             return;
         }
-        // Skip damaged tools/armor (would produce full undamaged ingredients unfairly)
-        if (input.isDamageableItem() && input.isDamaged()) {
-            return;
-        }
 
-        Optional<List<ItemStack>> results = resolveDecraft(input);
-        if (results.isEmpty()) {
+        Optional<ResolvedDecraft> resolved = resolveDecraft(input);
+        if (resolved.isEmpty()) {
             return;
         }
-        List<ItemStack> outputs = results.get();
+        ResolvedDecraft op = resolved.get();
+        List<ItemStack> outputs = op.outputs();
         if (!canInsertAll(outputs)) {
             return;
         }
 
-        // Consume input: for planks special-case consume 1; for recipes consume result count
-        int consume = input.is(ItemTags.PLANKS) ? 1 : resolveConsumeCount(input);
+        int consume = op.consumeCount();
         if (consume <= 0 || input.getCount() < consume) {
             return;
         }
@@ -164,27 +178,109 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         items.setStackInSlot(INPUT_SLOT, input.isEmpty() ? ItemStack.EMPTY : input);
 
         for (ItemStack out : outputs) {
-            ItemStack remaining = ItemHandlerHelper.insertItemStacked(outputInsertView(), out.copy(), false);
-            // Should be empty if canInsertAll passed; drop safety not needed in BE
-            if (!remaining.isEmpty()) {
-                // Extremely unlikely — leave remainder in void rather than duplicate input
-            }
+            ItemHandlerHelper.insertItemStacked(outputInsertView(), out.copy(), false);
         }
         setChanged();
     }
 
-    private int resolveConsumeCount(ItemStack input) {
-        return findBestRecipe(input)
-                .map(r -> r.value().getResultItem(level.registryAccess()).getCount())
-                .orElse(1);
+    /**
+     * Priority:
+     * 1) plank → wooden slabs
+     * 2) wooden slab → stick
+     * 3) bed → 3 matching wool + 3 oak planks
+     * 4) Farmer's Delight cutting-board recipes (input match only; tools built into machine)
+     * 5) reverse crafting fallback (skips damaged tools/armor)
+     */
+    private Optional<ResolvedDecraft> resolveDecraft(ItemStack input) {
+        Optional<List<ItemStack>> wood = resolveWoodChain(input);
+        if (wood.isPresent()) {
+            return Optional.of(new ResolvedDecraft(wood.get(), 1));
+        }
+
+        Optional<List<ItemStack>> bed = resolveBed(input);
+        if (bed.isPresent()) {
+            return Optional.of(new ResolvedDecraft(bed.get(), 1));
+        }
+
+        Optional<List<ItemStack>> cutting = resolveCutting(input);
+        if (cutting.isPresent()) {
+            return Optional.of(new ResolvedDecraft(cutting.get(), 1));
+        }
+
+        // Reverse-craft only: skip damaged tools/armor (would invent full ingredients unfairly).
+        // Damaged knives etc. still reach the cutting path above for salvage recipes.
+        if (input.isDamageableItem() && input.isDamaged()) {
+            return Optional.empty();
+        }
+
+        return findBestRecipe(input).map(holder -> {
+            List<ItemStack> outs = ingredientsOf(holder.value());
+            int consume = holder.value().getResultItem(level.registryAccess()).getCount();
+            return new ResolvedDecraft(outs, Math.max(1, consume));
+        });
     }
 
-    private Optional<List<ItemStack>> resolveDecraft(ItemStack input) {
-        // Special-case: any plank -> 2 sticks (prefer over reverse-craft to logs)
+    /** Planks → 2 matching slabs; wooden slabs → 1 stick. Not planks→sticks in one step. */
+    private Optional<List<ItemStack>> resolveWoodChain(ItemStack input) {
         if (input.is(ItemTags.PLANKS)) {
-            return Optional.of(List.of(new ItemStack(Items.STICK, 2)));
+            Item slab = PLANK_TO_SLAB.get(input.getItem());
+            if (slab == null) {
+                slab = lookupSlabForPlank(input.getItem());
+            }
+            if (slab != null && slab != Items.AIR) {
+                return Optional.of(List.of(new ItemStack(slab, 2)));
+            }
+            return Optional.empty();
         }
-        return findBestRecipe(input).map(holder -> ingredientsOf(holder.value()));
+        if (input.is(ItemTags.WOODEN_SLABS)) {
+            return Optional.of(List.of(new ItemStack(Items.STICK, 1)));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<List<ItemStack>> resolveBed(ItemStack input) {
+        Item wool = BED_TO_WOOL.get(input.getItem());
+        if (wool == null) {
+            return Optional.empty();
+        }
+        // Explicit special-case matching vanilla bed recipe (3 wool + 3 oak planks).
+        return Optional.of(List.of(
+                new ItemStack(wool, 3),
+                new ItemStack(Items.OAK_PLANKS, 3)
+        ));
+    }
+
+    /**
+     * Match any farmersdelight:cutting recipe by input ingredient only (ignore tool).
+     * Uses {@link CuttingBoardRecipe#getResults()} so automation always receives the listed
+     * stacks (chance rolls are ignored — deterministic full outputs for the auto machine).
+     * Consumes 1 input item per op.
+     */
+    private Optional<List<ItemStack>> resolveCutting(ItemStack input) {
+        List<ItemStack> best = null;
+        ResourceLocation bestId = null;
+        for (RecipeHolder<CuttingBoardRecipe> holder : level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CUTTING.get())) {
+            CuttingBoardRecipe recipe = holder.value();
+            NonNullList<Ingredient> ingredients = recipe.getIngredients();
+            if (ingredients.isEmpty() || !ingredients.getFirst().test(input)) {
+                continue;
+            }
+            List<ItemStack> results = new ArrayList<>();
+            for (ItemStack stack : recipe.getResults()) {
+                if (!stack.isEmpty()) {
+                    results.add(stack.copy());
+                }
+            }
+            if (results.isEmpty()) {
+                continue;
+            }
+            ResourceLocation id = holder.id();
+            if (best == null || id.toString().compareTo(bestId.toString()) < 0) {
+                best = results;
+                bestId = id;
+            }
+        }
+        return best == null ? Optional.empty() : Optional.of(best);
     }
 
     private Optional<RecipeHolder<CraftingRecipe>> findBestRecipe(ItemStack input) {
@@ -195,7 +291,6 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
                 continue;
             }
             ItemStack result = recipe.getResultItem(level.registryAccess());
-            // Match by item type (ignore NBT/components differences on crafted results)
             if (result.isEmpty() || result.getItem() != input.getItem()) {
                 continue;
             }
@@ -206,11 +301,9 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             if (ingredients.isEmpty()) {
                 continue;
             }
-            // Skip unsafe container leftovers (e.g. recipes that would invent buckets)
             if (hasUnsafeRemainingItems(ingredients)) {
                 continue;
             }
-            // Skip recipe results that are damageable tools if we're somehow matching damaged — already gated
             List<ItemStack> resolved = ingredientsOf(recipe);
             if (resolved.isEmpty()) {
                 continue;
@@ -220,7 +313,6 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         if (matches.isEmpty()) {
             return Optional.empty();
         }
-        // Prefer fewest non-empty ingredients; stable by recipe id
         matches.sort(Comparator
                 .comparingInt((RecipeHolder<CraftingRecipe> h) -> countIngredients(h.value()))
                 .thenComparing(h -> h.id().toString()));
@@ -246,7 +338,6 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             if (stacks.length == 0) {
                 return true;
             }
-            // If every option leaves a crafting remainder (bucket etc.), skip — would duplicate containers
             boolean allRemain = true;
             for (ItemStack s : stacks) {
                 if (!s.hasCraftingRemainingItem()) {
@@ -269,9 +360,8 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             }
             ItemStack[] options = ing.getItems();
             if (options.length == 0) {
-                return List.of(); // unresolved tag
+                return List.of();
             }
-            // Prefer first option that does not have a crafting remainder
             ItemStack chosen = options[0];
             for (ItemStack opt : options) {
                 if (!opt.hasCraftingRemainingItem()) {
@@ -281,7 +371,6 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             }
             ItemStack stack = chosen.copy();
             stack.setCount(1);
-            // Merge identical stacks
             boolean merged = false;
             for (ItemStack existing : out) {
                 if (ItemStack.isSameItemSameComponents(existing, stack)) {
@@ -298,14 +387,12 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private boolean canInsertAll(List<ItemStack> outputs) {
-        // Simulate insert into a copy of output slots
         ItemStack[] sim = new ItemStack[OUTPUT_SLOTS];
         for (int i = 0; i < OUTPUT_SLOTS; i++) {
             sim[i] = items.getStackInSlot(INPUT_SLOT + 1 + i).copy();
         }
         for (ItemStack out : outputs) {
             ItemStack remaining = out.copy();
-            // Fill existing stacks first
             for (int i = 0; i < OUTPUT_SLOTS && !remaining.isEmpty(); i++) {
                 if (!sim[i].isEmpty() && ItemStack.isSameItemSameComponents(sim[i], remaining)) {
                     int space = Math.min(sim[i].getMaxStackSize(), items.getSlotLimit(INPUT_SLOT + 1 + i)) - sim[i].getCount();
@@ -316,7 +403,6 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
                     }
                 }
             }
-            // Then empty slots
             for (int i = 0; i < OUTPUT_SLOTS && !remaining.isEmpty(); i++) {
                 if (sim[i].isEmpty()) {
                     int move = Math.min(remaining.getMaxStackSize(), remaining.getCount());
@@ -331,7 +417,6 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         return true;
     }
 
-    /** View used for actual inserts into output slots only. */
     private IItemHandler outputInsertView() {
         return new RangedWrapper(items, INPUT_SLOT + 1, TOTAL_SLOTS);
     }
@@ -366,4 +451,62 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     public boolean stillValid(Player player) {
         return net.minecraft.world.Container.stillValidBlockEntity(this, player);
     }
+
+    /** Fallback for modded planks: same namespace, path {@code *_planks} → {@code *_slab}. */
+    @Nullable
+    private static Item lookupSlabForPlank(Item plank) {
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(plank);
+        if (id == null) {
+            return null;
+        }
+        String path = id.getPath();
+        if (!path.endsWith("_planks")) {
+            return null;
+        }
+        ResourceLocation slabId = ResourceLocation.fromNamespaceAndPath(
+                id.getNamespace(),
+                path.substring(0, path.length() - "_planks".length()) + "_slab"
+        );
+        Item slab = BuiltInRegistries.ITEM.get(slabId);
+        return slab == Items.AIR ? null : slab;
+    }
+
+    private static Map<Item, Item> createPlankToSlabMap() {
+        Map<Item, Item> map = new HashMap<>();
+        map.put(Items.OAK_PLANKS, Items.OAK_SLAB);
+        map.put(Items.SPRUCE_PLANKS, Items.SPRUCE_SLAB);
+        map.put(Items.BIRCH_PLANKS, Items.BIRCH_SLAB);
+        map.put(Items.JUNGLE_PLANKS, Items.JUNGLE_SLAB);
+        map.put(Items.ACACIA_PLANKS, Items.ACACIA_SLAB);
+        map.put(Items.DARK_OAK_PLANKS, Items.DARK_OAK_SLAB);
+        map.put(Items.MANGROVE_PLANKS, Items.MANGROVE_SLAB);
+        map.put(Items.CHERRY_PLANKS, Items.CHERRY_SLAB);
+        map.put(Items.BAMBOO_PLANKS, Items.BAMBOO_SLAB);
+        map.put(Items.CRIMSON_PLANKS, Items.CRIMSON_SLAB);
+        map.put(Items.WARPED_PLANKS, Items.WARPED_SLAB);
+        return Map.copyOf(map);
+    }
+
+    private static Map<Item, Item> createBedToWoolMap() {
+        Map<Item, Item> map = new HashMap<>();
+        map.put(Items.WHITE_BED, Items.WHITE_WOOL);
+        map.put(Items.ORANGE_BED, Items.ORANGE_WOOL);
+        map.put(Items.MAGENTA_BED, Items.MAGENTA_WOOL);
+        map.put(Items.LIGHT_BLUE_BED, Items.LIGHT_BLUE_WOOL);
+        map.put(Items.YELLOW_BED, Items.YELLOW_WOOL);
+        map.put(Items.LIME_BED, Items.LIME_WOOL);
+        map.put(Items.PINK_BED, Items.PINK_WOOL);
+        map.put(Items.GRAY_BED, Items.GRAY_WOOL);
+        map.put(Items.LIGHT_GRAY_BED, Items.LIGHT_GRAY_WOOL);
+        map.put(Items.CYAN_BED, Items.CYAN_WOOL);
+        map.put(Items.PURPLE_BED, Items.PURPLE_WOOL);
+        map.put(Items.BLUE_BED, Items.BLUE_WOOL);
+        map.put(Items.BROWN_BED, Items.BROWN_WOOL);
+        map.put(Items.GREEN_BED, Items.GREEN_WOOL);
+        map.put(Items.RED_BED, Items.RED_WOOL);
+        map.put(Items.BLACK_BED, Items.BLACK_WOOL);
+        return Map.copyOf(map);
+    }
+
+    private record ResolvedDecraft(List<ItemStack> outputs, int consumeCount) {}
 }

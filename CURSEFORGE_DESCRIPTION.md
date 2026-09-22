@@ -14,14 +14,16 @@ NeoForge 1.21.1 companion for [Farmer's Delight](https://www.curseforge.com/mine
 - Salvage FD / More Delight knives with a **pickaxe**
 - Extra uncrafts for common pack decor (e.g. Supplementaries fiber items)
 
-### Decrafter (1.0.6)
-Craft with **axe + crate + pickaxe / knife + shears** (`ACP` / `K S`).
-- Hopper in from top/sides, out from bottom
-- Right-click GUI (fixed texture + slot layout)
-- Automatically reverse-crafts items into their recipe ingredients
-- Planks special-case: 1 plank → 2 sticks
+### Decrafter (1.0.7)
+Craft with **axe + crate + pickaxe / knife + shears** (`ACP` / `K S`) — tools are built into the machine.
+- Hopper in from top/sides, out from bottom (unchanged)
+- Right-click GUI
+- **Auto cutting board**: runs every Farmer's Delight cutting recipe by input item (no tool in GUI)
+- Wood chain: **planks → 2 slabs**, then **slabs → 1 stick** (not planks→sticks in one step)
+- Beds: **1 bed → 3 matching wool + 3 oak planks**
+- Reverse crafting kept as fallback when no cutting recipe matches
 
-### Recipe book (1.0.6)
+### Recipe book
 Crafting recipes auto-unlock when you pick up the required items (crates/sacks unlock their unpack recipes).
 
 ### Pack integrations
