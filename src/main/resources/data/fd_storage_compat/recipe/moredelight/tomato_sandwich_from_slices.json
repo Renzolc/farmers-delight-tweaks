@@ -16,6 +16,7 @@
   ],
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
+  "show_notification": true,
   "ingredients": [
     {
       "tag": "c:bread_slices"

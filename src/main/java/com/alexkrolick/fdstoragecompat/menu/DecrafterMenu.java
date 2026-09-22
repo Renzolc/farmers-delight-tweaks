@@ -29,22 +29,27 @@ public class DecrafterMenu extends AbstractContainerMenu {
         // Input
         this.addSlot(new SlotItemHandler(decrafter.getItems(), DecrafterBlockEntity.INPUT_SLOT, 80, 18));
 
-        // 3x3 output
+        // 3x3 output (extract-only in GUI)
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 int index = DecrafterBlockEntity.INPUT_SLOT + 1 + col + row * 3;
-                this.addSlot(new SlotItemHandler(decrafter.getItems(), index, 62 + col * 18, 40 + row * 18));
+                this.addSlot(new SlotItemHandler(decrafter.getItems(), index, 62 + col * 18, 40 + row * 18) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        return false;
+                    }
+                });
             }
         }
 
-        // Player inventory
+        // Player inventory (clear of output rows ending at y=76)
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 104 + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInv, col, 8 + col * 18, 142));
+            this.addSlot(new Slot(playerInv, col, 8 + col * 18, 162));
         }
     }
 

@@ -1,24 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
+  "show_notification": true,
   "key": {
+    "A": {
+      "tag": "minecraft:axes"
+    },
     "C": {
-      "item": "farmersdelight:cutting_board"
+      "tag": "fd_storage_compat:crates"
+    },
+    "P": {
+      "tag": "minecraft:pickaxes"
     },
     "K": {
       "tag": "c:tools/knife"
     },
-    "A": {
-      "tag": "minecraft:axes"
-    },
-    "P": {
-      "tag": "minecraft:pickaxes"
+    "S": {
+      "item": "minecraft:shears"
     }
   },
   "pattern": [
-    "CCC",
-    "KAP",
-    "CCC"
+    "ACP",
+    "K S"
   ],
   "result": {
     "count": 1,

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_fd_storage_compat_sweet_berry_crate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "fd_storage_compat:sweet_berry_crate"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "fd_storage_compat:sweet_berries_from_crate"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_fd_storage_compat_sweet_berry_crate"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fd_storage_compat:sweet_berries_from_crate"
+    ]
+  }
+}
