@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "culturaldelights"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "show_notification": true,
+  "key": {
+    "#": {
+      "item": "culturaldelights:cucumber_seeds"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "fd_storage_compat:cucumber_seed_sack"
+  }
+}
