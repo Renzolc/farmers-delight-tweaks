@@ -1,0 +1,43 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "sophisticatedstorage:shulker_box"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 2,
+        "id": "minecraft:shulker_shell"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:chest"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:lever"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedstorage"
+    }
+  ]
+}

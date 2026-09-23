@@ -1,0 +1,37 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "create:wrench"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "create:cogwheel"
+      }
+    },
+    {
+      "item": {
+        "count": 3,
+        "id": "create:golden_sheet"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

@@ -8,6 +8,8 @@ NeoForge 1.21.1 add-on for [Farmer's Delight](https://github.com/vectorwing/Farm
 - Modded seed/sapling sacks + produce crates for Cultural / Veggies / Expanded / Fruits / Crabber's Delight, Quark blossom+ancient saplings, and Supplementaries flax seeds (recipes gated with `neoforge:mod_loaded`)
 - Cutting-board uncrafts for FD rope/canvas/net/fences and knives
 - Pack-compat cutting recipes for Supplementaries fiber/decor, Quark rope, More Delight knives, and Handcrafted sheets
+- Cutting-board / Decrafter uncrafts for Create kinetics/machines/components when Create is loaded
+- Cutting-board / Decrafter uncrafts for Sophisticated Backpacks + Sophisticated Storage (backpacks, storage tiers, upgrades) when those mods are loaded
 
 ## Integrations
 
@@ -53,5 +55,15 @@ Processing priority:
 4. **Mob heads → matching spawn eggs** (1 head → 1 egg; vanilla heads plus modded `_head`/`_skull` names when the egg exists)
 5. **All Farmer's Delight cutting-board recipes** (matched by input item only)
 6. Reverse crafting as fallback for items with no cutting recipe
+
+
+
+### Create
+
+When `create` is installed, cutting-board recipes (also used by the Decrafter) salvage common kinetics, machines, logistics parts, casings, and tools. High-ratio cheap crafts (e.g. shafts ×8) are skipped on the cutting board — use the Decrafter with a full craft batch to reverse those via vanilla crafting fallback. Decorative palette blocks and most dye variants are skipped.
+
+### Sophisticated Backpacks / Storage
+
+When `sophisticatedbackpacks` / `sophisticatedstorage` are installed, cutting-board recipes (also used by the Decrafter) salvage backpacks, storage containers, and upgrades back toward previous tiers / main materials. Recipes match by item id only — **empty** backpacks and storage before uncrafting or contents are lost. Optional Chipped/Sawmill upgrades and creative infinity upgrades are skipped.
 
 Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).
