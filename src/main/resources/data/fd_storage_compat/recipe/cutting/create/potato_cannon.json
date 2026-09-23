@@ -1,0 +1,49 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "create:potato_cannon"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "create:andesite_alloy"
+      }
+    },
+    {
+      "item": {
+        "count": 3,
+        "id": "create:fluid_pipe"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "create:precision_mechanism"
+      }
+    },
+    {
+      "item": {
+        "count": 2,
+        "id": "minecraft:copper_ingot"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

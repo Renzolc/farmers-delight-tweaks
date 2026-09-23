@@ -1,0 +1,55 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "create:wand_of_symmetry"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "create:brass_ingot"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "create:precision_mechanism"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:ender_pearl"
+      }
+    },
+    {
+      "item": {
+        "count": 3,
+        "id": "minecraft:glass"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:obsidian"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

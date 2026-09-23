@@ -1,0 +1,43 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "sophisticatedstorage:controller"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:comparator"
+      }
+    },
+    {
+      "item": {
+        "count": 2,
+        "id": "minecraft:oak_planks"
+      }
+    },
+    {
+      "item": {
+        "count": 2,
+        "id": "minecraft:stone"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedstorage"
+    }
+  ]
+}

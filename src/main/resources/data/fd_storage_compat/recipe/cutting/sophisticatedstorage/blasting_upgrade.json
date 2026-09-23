@@ -1,0 +1,43 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "sophisticatedstorage:blasting_upgrade"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "sophisticatedstorage:upgrade_base"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:blast_furnace"
+      }
+    },
+    {
+      "item": {
+        "count": 2,
+        "id": "minecraft:iron_ingot"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedstorage"
+    }
+  ]
+}

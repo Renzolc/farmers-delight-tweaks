@@ -1,0 +1,43 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "sophisticatedstorage:limited_barrel_3"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 4,
+        "id": "minecraft:oak_planks"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:oak_slab"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:lever"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "axe_dig"
+    },
+    {
+      "tag": "minecraft:axes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedstorage"
+    }
+  ]
+}

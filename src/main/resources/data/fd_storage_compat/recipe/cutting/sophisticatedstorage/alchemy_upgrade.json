@@ -1,0 +1,61 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "sophisticatedstorage:alchemy_upgrade"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 1,
+        "id": "sophisticatedstorage:upgrade_base"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:blaze_rod"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:ghast_tear"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:ender_pearl"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:fermented_spider_eye"
+      }
+    },
+    {
+      "item": {
+        "count": 1,
+        "id": "minecraft:iron_ingot"
+      }
+    }
+  ],
+  "tool": [
+    {
+      "type": "farmersdelight:item_ability",
+      "action": "pickaxe_dig"
+    },
+    {
+      "tag": "minecraft:pickaxes"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedstorage"
+    }
+  ]
+}
