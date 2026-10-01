@@ -35,6 +35,8 @@ neoForge {
         minecraftVersion = project.parchment_minecraft_version
     }
 
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
     runs {
         client {
             client()
@@ -65,6 +67,8 @@ configurations {
 dependencies {
     // Farmer's Delight API at compile time only (runtime provided by the game; do not shade).
     compileOnly files('libs/FarmersDelight.jar')
+    // Optional Sophisticated Backpacks upgrade API. Not shipped; present at runtime when that mod is loaded.
+    compileOnly files('libs/sophisticatedcore.jar', 'libs/sophisticatedbackpacks.jar')
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "fd_storage_compat:item/advanced_uncrafter_upgrade"
+  }
+}

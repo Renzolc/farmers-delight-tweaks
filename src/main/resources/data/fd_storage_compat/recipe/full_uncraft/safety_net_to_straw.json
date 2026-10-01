@@ -1,0 +1,13 @@
+{
+  "type": "fd_storage_compat:full_uncraft",
+  "input": {
+    "item": "farmersdelight:safety_net"
+  },
+  "consume": 1,
+  "results": [
+    {
+      "id": "farmersdelight:rope",
+      "count": 4
+    }
+  ]
+}

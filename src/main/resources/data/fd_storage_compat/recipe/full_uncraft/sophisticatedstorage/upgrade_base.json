@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedstorage"
+    }
+  ],
+  "type": "fd_storage_compat:full_uncraft",
+  "input": {
+    "item": "sophisticatedstorage:upgrade_base"
+  },
+  "consume": 1,
+  "results": [
+    {
+      "id": "minecraft:iron_ingot",
+      "count": 4
+    },
+    {
+      "id": "minecraft:oak_planks",
+      "count": 5
+    }
+  ]
+}

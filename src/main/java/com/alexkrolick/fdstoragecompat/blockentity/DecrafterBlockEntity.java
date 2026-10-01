@@ -222,6 +222,11 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             return Optional.empty();
         }
 
+        // Uncrafter upgrades full-return only through the backpack upgrade, never the Decrafter.
+        if (isUncrafterUpgrade(input)) {
+            return Optional.empty();
+        }
+
         return findBestRecipe(input).map(holder -> {
             List<ItemStack> outs = ingredientsOf(holder.value());
             int consume = holder.value().getResultItem(level.registryAccess()).getCount();
@@ -560,6 +565,14 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         map.put(Items.PIGLIN_HEAD, Items.PIGLIN_SPAWN_EGG);
         map.put(Items.DRAGON_HEAD, Items.ENDER_DRAGON_SPAWN_EGG);
         return Map.copyOf(map);
+    }
+
+    private static boolean isUncrafterUpgrade(ItemStack input) {
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(input.getItem());
+        if (id == null || !id.getNamespace().equals("fd_storage_compat")) {
+            return false;
+        }
+        return id.getPath().equals("simple_uncrafter_upgrade") || id.getPath().equals("advanced_uncrafter_upgrade");
     }
 
     private record ResolvedDecraft(List<ItemStack> outputs, int consumeCount) {}

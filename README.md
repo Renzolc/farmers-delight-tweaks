@@ -10,6 +10,7 @@ NeoForge 1.21.1 add-on for [Farmer's Delight](https://github.com/vectorwing/Farm
 - Pack-compat cutting recipes for Supplementaries fiber/decor, Quark rope, More Delight knives, and Handcrafted sheets
 - Cutting-board / Decrafter uncrafts for Create kinetics/machines/components when Create is loaded
 - Cutting-board / Decrafter uncrafts for Sophisticated Backpacks + Sophisticated Storage (backpacks, storage tiers, upgrades) when those mods are loaded
+- Simple and Advanced Uncrafter backpack upgrades (optional, when Sophisticated Backpacks is loaded) that return full craft ingredients for those same uncrafts. The cutting board stays partial.
 
 ## Integrations
 
@@ -67,3 +68,15 @@ When `create` is installed, cutting-board recipes (also used by the Decrafter) s
 When `sophisticatedbackpacks` / `sophisticatedstorage` are installed, cutting-board recipes (also used by the Decrafter) salvage backpacks, storage containers, and upgrades back toward previous tiers / main materials. Recipes match by item id only — **empty** backpacks and storage before uncrafting or contents are lost. Optional Chipped/Sawmill upgrades and creative infinity upgrades are skipped.
 
 Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).
+
+
+### Uncrafter upgrades
+
+When Sophisticated Backpacks is installed, two upgrade items are added:
+
+- **Simple Uncrafter** — open the backpack, open the upgrade, put the item in the input slot. Full ingredients appear in a 3×3 and you take them yourself (into your cursor or inventory). Needs `1 flint knife + 2 iron + upgrade base + cutting board`.
+- **Advanced Uncrafter** — same input and the same full-return recipes, but recovered items are inserted into the backpack automatically. If the backpack cannot fit them, the input stays put. Crafted from the Simple upgrade plus `2 hoppers + 2 redstone`.
+
+Only one of each upgrade fits in a backpack. Both can be installed together. They only uncraft items this mod already has a cutting recipe for, plus the two upgrade items themselves. Damaged tools are left alone. Backpacks and storage still match by item id, so empty them first.
+
+The cutting board and Decrafter are unchanged and still pay the partial salvage. There is no cutting-board recipe for the Uncrafter upgrades, and the Decrafter will not reverse-craft them. To uncraft an Uncrafter you need a second one installed and the spare sitting in the input slot (the installed copy is not consumed).

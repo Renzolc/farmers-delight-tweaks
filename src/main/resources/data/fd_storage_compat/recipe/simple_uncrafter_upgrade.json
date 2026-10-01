@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedbackpacks"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "show_notification": true,
+  "key": {
+    "K": {
+      "item": "farmersdelight:flint_knife"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "C": {
+      "item": "farmersdelight:cutting_board"
+    }
+  },
+  "pattern": [
+    " K ",
+    "IBI",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "fd_storage_compat:simple_uncrafter_upgrade"
+  }
+}
