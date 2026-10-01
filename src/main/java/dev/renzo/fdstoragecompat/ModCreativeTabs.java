@@ -2,10 +2,14 @@ package dev.renzo.fdstoragecompat;
 
 import java.util.function.Supplier;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -23,8 +27,17 @@ public final class ModCreativeTabs {
                         for (DeferredBlock<Block> block : ModBlocks.ALL) {
                             output.accept(block.get());
                         }
+                        acceptIfPresent(output, "simple_uncrafter_upgrade");
+                        acceptIfPresent(output, "advanced_uncrafter_upgrade");
                     })
                     .build());
+
+    private static void acceptIfPresent(CreativeModeTab.Output output, String path) {
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(FdStorageCompat.MOD_ID, path));
+        if (item != Items.AIR) {
+            output.accept(item);
+        }
+    }
 
     private ModCreativeTabs() {}
 }

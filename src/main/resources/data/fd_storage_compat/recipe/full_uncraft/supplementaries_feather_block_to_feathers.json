@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "supplementaries"
+    }
+  ],
+  "type": "fd_storage_compat:full_uncraft",
+  "input": {
+    "item": "supplementaries:feather_block"
+  },
+  "consume": 1,
+  "results": [
+    {
+      "id": "minecraft:feather",
+      "count": 9
+    }
+  ]
+}
