@@ -10,35 +10,25 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "fd_storage_compat:advanced_uncrafter_upgrade"
+        "recipe": "fd_storage_compat:decrafter_upgrade"
       }
     },
-    "has_minecraft_hopper": {
+    "has_minecraft_leather": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "minecraft:hopper"
+            "items": "minecraft:leather"
           }
         ]
       }
     },
-    "has_minecraft_redstone": {
+    "has_fd_storage_compat_decrafter": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "minecraft:redstone"
-          }
-        ]
-      }
-    },
-    "has_fd_storage_compat_simple_uncrafter_upgrade": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": "fd_storage_compat:simple_uncrafter_upgrade"
+            "items": "fd_storage_compat:decrafter"
           }
         ]
       }
@@ -47,14 +37,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_minecraft_hopper",
-      "has_minecraft_redstone",
-      "has_fd_storage_compat_simple_uncrafter_upgrade"
+      "has_minecraft_leather",
+      "has_fd_storage_compat_decrafter"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fd_storage_compat:advanced_uncrafter_upgrade"
+      "fd_storage_compat:decrafter_upgrade"
     ]
   }
 }

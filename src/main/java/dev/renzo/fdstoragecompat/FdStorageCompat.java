@@ -32,9 +32,9 @@ public class FdStorageCompat {
         ModRecipeTypes.SERIALIZERS.register(modEventBus);
         modEventBus.addListener(this::registerCapabilities);
         if (ModList.get().isLoaded("sophisticatedbackpacks")) {
-            dev.renzo.fdstoragecompat.compat.sb.SbUncrafterSetup.init(modEventBus);
+            dev.renzo.fdstoragecompat.compat.sb.DecrafterUpgradeSetup.init(modEventBus);
             if (FMLEnvironment.dist == Dist.CLIENT) {
-                dev.renzo.fdstoragecompat.client.SbUncrafterClientSetup.init(modEventBus);
+                dev.renzo.fdstoragecompat.client.DecrafterUpgradeClientSetup.init(modEventBus);
             }
         }
         if (FMLEnvironment.dist == Dist.CLIENT) {

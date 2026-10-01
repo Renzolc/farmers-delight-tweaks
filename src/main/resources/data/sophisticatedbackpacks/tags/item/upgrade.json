@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "fd_storage_compat:simple_uncrafter_upgrade",
-    "fd_storage_compat:advanced_uncrafter_upgrade"
+    "fd_storage_compat:decrafter_upgrade"
   ]
 }

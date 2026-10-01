@@ -222,8 +222,8 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             return Optional.empty();
         }
 
-        // Uncrafter upgrades full-return only through the backpack upgrade, never the Decrafter.
-        if (isUncrafterUpgrade(input)) {
+        // Decrafter Upgrade full-returns only through the backpack upgrade, never this block.
+        if (isDecrafterUpgrade(input)) {
             return Optional.empty();
         }
 
@@ -567,12 +567,9 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         return Map.copyOf(map);
     }
 
-    private static boolean isUncrafterUpgrade(ItemStack input) {
+    private static boolean isDecrafterUpgrade(ItemStack input) {
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(input.getItem());
-        if (id == null || !id.getNamespace().equals("fd_storage_compat")) {
-            return false;
-        }
-        return id.getPath().equals("simple_uncrafter_upgrade") || id.getPath().equals("advanced_uncrafter_upgrade");
+        return id != null && id.getNamespace().equals("fd_storage_compat") && id.getPath().equals("decrafter_upgrade");
     }
 
     private record ResolvedDecraft(List<ItemStack> outputs, int consumeCount) {}
