@@ -10,15 +10,15 @@ import net.minecraft.world.item.TooltipFlag;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 
-public class SimpleUncrafterUpgradeItem extends UpgradeItemBase<UncrafterUpgradeWrapper> {
-    private static final UpgradeType<UncrafterUpgradeWrapper> TYPE = new UpgradeType<>(UncrafterUpgradeWrapper::new);
+public class DecrafterUpgradeItem extends UpgradeItemBase<DecrafterUpgradeWrapper> {
+    private static final UpgradeType<DecrafterUpgradeWrapper> TYPE = new UpgradeType<>(DecrafterUpgradeWrapper::new);
 
-    public SimpleUncrafterUpgradeItem() {
+    public DecrafterUpgradeItem() {
         super(OnePerStorageLimit.INSTANCE);
     }
 
     @Override
-    public UpgradeType<UncrafterUpgradeWrapper> getType() {
+    public UpgradeType<DecrafterUpgradeWrapper> getType() {
         return TYPE;
     }
 

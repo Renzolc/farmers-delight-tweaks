@@ -27,8 +27,7 @@ public final class ModCreativeTabs {
                         for (DeferredBlock<Block> block : ModBlocks.ALL) {
                             output.accept(block.get());
                         }
-                        acceptIfPresent(output, "simple_uncrafter_upgrade");
-                        acceptIfPresent(output, "advanced_uncrafter_upgrade");
+                        acceptIfPresent(output, "decrafter_upgrade");
                     })
                     .build());
 

@@ -23,7 +23,7 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
 /**
- * Full-count uncraft used only by the Uncrafter backpack upgrades.
+ * Full-count uncraft used only by the Decrafter Upgrade.
  * Cutting-board recipes stay on their partial yields.
  */
 public class FullUncraftRecipe implements Recipe<SingleRecipeInput> {
