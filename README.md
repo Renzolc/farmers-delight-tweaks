@@ -74,7 +74,7 @@ Crafting recipes auto-unlock in the recipe book when you obtain the required ing
 
 When Sophisticated Backpacks is installed, two upgrade items are added:
 
-- **Simple Uncrafter** — open the backpack, open the upgrade, put the item in the input slot. Full ingredients appear in a 3×3 and you take them yourself (into your cursor or inventory). Needs `1 flint knife + 2 iron + upgrade base + cutting board`.
+- **Simple Uncrafter** — open the backpack, open the upgrade, put the item in the input slot. Full ingredients appear in a 3×3 and you take them yourself (into your cursor or inventory). Needs `1 flint knife + 2 iron + upgrade base + Decrafter`.
 - **Advanced Uncrafter** — same input and the same full-return recipes, but recovered items are inserted into the backpack automatically. If the backpack cannot fit them, the input stays put. Crafted from the Simple upgrade plus `2 hoppers + 2 redstone`.
 
 Only one of each upgrade fits in a backpack. Both can be installed together. They only uncraft items this mod already has a cutting recipe for, plus the two upgrade items themselves. Damaged tools are left alone. Backpacks and storage still match by item id, so empty them first.
