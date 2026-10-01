@@ -65,7 +65,7 @@
   "block.fd_storage_compat.flax_seed_sack": "Flax Seed Sack",
   "container.fd_storage_compat.decrafter": "Decrafter",
   "item.fd_storage_compat.decrafter_upgrade": "Decrafter Upgrade",
-  "item.fd_storage_compat.decrafter_upgrade.tooltip": "Put an item in the slot. Full craft ingredients are inserted into the backpack. If they do not fit, the item stays. The cutting board still returns partial salvage.",
+  "item.fd_storage_compat.decrafter_upgrade.tooltip": "Put an item in the slot. Any crafting recipe is reversed at full counts into the backpack, stored items first. If they do not fit, the item stays.",
   "gui.fd_storage_compat.decrafter_upgrade": "Decrafter Upgrade",
   "gui.fd_storage_compat.decrafter_upgrade.tooltip": "Full ingredients go into the backpack",
   "gui.fd_storage_compat.decrafter_upgrade.into_backpack": "Into backpack"

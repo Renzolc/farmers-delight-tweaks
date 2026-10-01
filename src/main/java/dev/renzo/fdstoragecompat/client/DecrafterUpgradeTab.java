@@ -3,8 +3,6 @@ package dev.renzo.fdstoragecompat.client;
 import java.util.List;
 
 import dev.renzo.fdstoragecompat.compat.sb.DecrafterUpgradeContainer;
-import dev.renzo.fdstoragecompat.recipe.FullUncraftRecipe;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -90,13 +88,10 @@ public class DecrafterUpgradeTab extends UpgradeSettingsTab<DecrafterUpgradeCont
         }
 
         private List<ItemStack> results() {
-            if (minecraft.level == null || container.getSlots().isEmpty()) {
+            if (minecraft.level == null) {
                 return List.of();
             }
-            ItemStack input = container.getSlots().getFirst().getItem();
-            return FullUncraftRecipe.find(minecraft.level, input)
-                    .map(recipe -> input.getCount() >= recipe.consume() ? recipe.copyResults() : List.<ItemStack>of())
-                    .orElse(List.of());
+            return container.getUpgradeWrapper().preview(minecraft.level);
         }
     }
 }
