@@ -10,7 +10,7 @@ NeoForge 1.21.1 add-on for [Farmer's Delight](https://github.com/vectorwing/Farm
 - Pack-compat cutting recipes for Supplementaries fiber/decor, Quark rope, More Delight knives, and Handcrafted sheets
 - Cutting-board / Decrafter uncrafts for Create kinetics/machines/components when Create is loaded
 - Cutting-board / Decrafter uncrafts for Sophisticated Backpacks + Sophisticated Storage (backpacks, storage tiers, upgrades) when those mods are loaded
-- Decrafter Upgrade for Sophisticated Backpacks (optional). Putting an item in it returns full craft ingredients into the backpack. The cutting board and Decrafter block stay partial.
+- Decrafter Upgrade for Sophisticated Backpacks (optional). It reverses any crafting recipe at full ingredient counts into the backpack. The cutting board and Decrafter block stay partial.
 
 ## Integrations
 
@@ -65,7 +65,7 @@ When `create` is installed, cutting-board recipes (also used by the Decrafter) s
 
 ### Sophisticated Backpacks / Storage
 
-When `sophisticatedbackpacks` / `sophisticatedstorage` are installed, cutting-board recipes (also used by the Decrafter) salvage backpacks, storage containers, and upgrades back toward previous tiers / main materials. Recipes match by item id only — **empty** backpacks and storage before uncrafting or contents are lost. Optional Chipped/Sawmill upgrades and creative infinity upgrades are skipped.
+When `sophisticatedbackpacks` / `sophisticatedstorage` are installed, cutting-board recipes (also used by the Decrafter) salvage backpacks, storage containers, and upgrades back toward previous tiers / main materials. Recipes match by item id only — **empty** backpacks and storage before uncrafting on the cutting board or Decrafter block, or contents are lost. The Decrafter Upgrade moves stored items into the backpack instead. Optional Chipped/Sawmill upgrades and creative infinity upgrades are skipped.
 
 Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).
 
@@ -76,6 +76,8 @@ When Sophisticated Backpacks is installed, one upgrade is added: **Decrafter Upg
 
 Craft it shapeless with 4 leather and 1 Decrafter. Only one fits in a backpack.
 
-Open the backpack, open the upgrade, and put an item in the input slot. If this mod has an uncraft for it, the full craft ingredients are inserted into the backpack. If they do not fit, the input stays. There is no take-by-hand grid. Damaged tools are left alone. Backpacks and storage still match by item id, so empty them first.
+Open the backpack, open the upgrade, and put an item in the input slot. If that item has a crafting recipe, the full ingredient counts are inserted into the backpack. Tag ingredients use the same item this mod already picked in its full-uncraft data, or the first registered item in the tag. Items with no crafting recipe are left alone, except uncrafts this mod already defines. Damaged tools are uncrafted anyway. If the ingredients (and anything stored inside the item) do not fit, the input stays. There is no take-by-hand grid.
+
+Containers match by item id even when they have contents. Stored items are moved into the backpack first, then the craft ingredients, and the container is emptied only after that insert succeeds. A linked backpack endpoint is left alone (it points at another backpack). A container that holds fluid is left alone. The cutting board and Decrafter block still do not return full counts, and they still do not uncraft the upgrade.
 
 The cutting board and the Decrafter block keep their partial salvage. Full counts exist only through this upgrade, including a full return of the upgrade itself (4 leather + 1 Decrafter). The cutting board has no recipe for it, and the Decrafter block will not reverse-craft it, so you need a Decrafter Upgrade already installed and a spare upgrade in its input.

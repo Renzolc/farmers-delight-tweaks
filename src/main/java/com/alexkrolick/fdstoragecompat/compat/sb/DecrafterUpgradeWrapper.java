@@ -1,12 +1,13 @@
 package com.alexkrolick.fdstoragecompat.compat.sb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import com.alexkrolick.fdstoragecompat.recipe.FullUncraftRecipe;
+import com.alexkrolick.fdstoragecompat.recipe.CraftUncraft;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +23,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 
 /**
- * One input slot. A matching full-uncraft recipe moves those ingredients into the backpack.
+ * One input slot. Any crafting recipe (or this mod's full_uncraft) is reversed into the backpack.
  */
 public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgradeWrapper, DecrafterUpgradeItem>
         implements ITickableUpgrade {
@@ -86,9 +87,11 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
         }
         Resolved op = resolved.get();
         IItemHandler backpack = storageWrapper.getInventoryForUpgradeProcessing();
+        // Contents first, then craft ingredients. All of it fits, or the input stays.
         if (!insertAll(backpack, op.results())) {
             return false;
         }
+        op.clearContents().run();
         inventory.extractItem(INPUT_SLOT, op.consume(), false);
         return true;
     }
@@ -123,37 +126,35 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
 
     private Optional<Resolved> resolve(Level level) {
         ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-        if (input.isEmpty() || (input.isDamageableItem() && input.isDamaged())) {
-            return Optional.empty();
-        }
-        Optional<FullUncraftRecipe> recipe = FullUncraftRecipe.find(level, input);
-        if (recipe.isEmpty()) {
-            return Optional.empty();
-        }
-        int consume = recipe.get().consume();
-        if (input.getCount() < consume) {
-            return Optional.empty();
-        }
-        List<ItemStack> results = recipe.get().copyResults();
-        if (results.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(new Resolved(consume, results));
+        return resolveStack(level, input);
     }
 
     /** Client preview of what the next uncraft will insert. Not a container slot. */
     public List<ItemStack> preview(Level level) {
         ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-        if (input.isEmpty() || level == null) {
-            return List.of();
-        }
-        return FullUncraftRecipe.find(level, input).map(recipe -> {
-            if (input.getCount() < recipe.consume()) {
-                return List.<ItemStack>of();
-            }
-            return recipe.copyResults();
-        }).orElse(List.of());
+        return resolveStack(level, input).map(Resolved::results).orElse(List.of());
     }
 
-    private record Resolved(int consume, List<ItemStack> results) {}
+    private static Optional<Resolved> resolveStack(Level level, ItemStack input) {
+        if (input.isEmpty() || level == null) {
+            return Optional.empty();
+        }
+        Optional<CraftUncraft.Result> crafted = CraftUncraft.resolve(level, input);
+        if (crafted.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<StoredContents.Extraction> contents = StoredContents.extract(level, input);
+        if (contents.isEmpty()) {
+            return Optional.empty();
+        }
+        List<ItemStack> results = new ArrayList<>();
+        results.addAll(contents.get().stacks());
+        results.addAll(crafted.get().results());
+        if (results.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new Resolved(crafted.get().consume(), results, contents.get().clearAfterInsert()));
+    }
+
+    private record Resolved(int consume, List<ItemStack> results, Runnable clearContents) {}
 }
