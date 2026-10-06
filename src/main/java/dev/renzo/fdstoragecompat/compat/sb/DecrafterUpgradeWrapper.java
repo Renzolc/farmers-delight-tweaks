@@ -24,6 +24,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 
 /**
  * One input slot. Any crafting recipe (or this mod's full_uncraft) is reversed into the backpack.
+ * An item with no decraft result is moved into the backpack unchanged.
  */
 public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgradeWrapper, DecrafterUpgradeItem>
         implements ITickableUpgrade {
@@ -75,15 +76,26 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
         processing = true;
         try {
             return depositIntoBackpack(level);
+        } catch (RuntimeException e) {
+            // Runs inside the menu's broadcastChanges on the server tick; never let it take the world down.
+            ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
+            CraftUncraft.warnOnce("process:" + CraftUncraft.itemId(input),
+                    "Decrafter Upgrade could not process " + CraftUncraft.itemId(input) + "; it was left in the input slot", e);
+            return false;
         } finally {
             processing = false;
         }
     }
 
     private boolean depositIntoBackpack(Level level) {
+        ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
+        if (input.isEmpty()) {
+            return false;
+        }
         Optional<Resolved> resolved = resolve(level);
         if (resolved.isEmpty()) {
-            return false;
+            // Nothing to decraft: move the item into the backpack unchanged so the input slot clears.
+            return passThrough(input);
         }
         Resolved op = resolved.get();
         IItemHandler backpack = storageWrapper.getInventoryForUpgradeProcessing();
@@ -93,6 +105,23 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
         }
         op.clearContents().run();
         inventory.extractItem(INPUT_SLOT, op.consume(), false);
+        return true;
+    }
+
+    /**
+     * Moves an item with no decraft result into the backpack as is. Whatever does not fit stays in the input.
+     */
+    private boolean passThrough(ItemStack input) {
+        IItemHandler backpack = storageWrapper.getInventoryForUpgradeProcessing();
+        if (backpack == null) {
+            return false;
+        }
+        ItemStack leftover = InventoryHelper.insertIntoInventory(input.copy(), backpack, false);
+        int moved = input.getCount() - (leftover == null ? 0 : leftover.getCount());
+        if (moved <= 0) {
+            return false;
+        }
+        inventory.extractItem(INPUT_SLOT, moved, false);
         return true;
     }
 
@@ -132,7 +161,13 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
     /** Client preview of what the next uncraft will insert. Not a container slot. */
     public List<ItemStack> preview(Level level) {
         ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-        return resolveStack(level, input).map(Resolved::results).orElse(List.of());
+        try {
+            return resolveStack(level, input).map(Resolved::results).orElse(List.of());
+        } catch (RuntimeException e) {
+            CraftUncraft.warnOnce("preview:" + CraftUncraft.itemId(input),
+                    "Decrafter Upgrade preview failed for " + CraftUncraft.itemId(input), e);
+            return List.of();
+        }
     }
 
     private static Optional<Resolved> resolveStack(Level level, ItemStack input) {
@@ -144,7 +179,7 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
             return Optional.empty();
         }
         Optional<StoredContents.Extraction> contents = StoredContents.extract(level, input);
-        if (contents.isEmpty()) {
+        if (contents == null || contents.isEmpty()) {
             return Optional.empty();
         }
         List<ItemStack> results = new ArrayList<>();

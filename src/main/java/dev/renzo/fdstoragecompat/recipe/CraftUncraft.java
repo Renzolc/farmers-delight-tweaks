@@ -5,7 +5,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
+import dev.renzo.fdstoragecompat.FdStorageCompat;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -35,21 +41,60 @@ public final class CraftUncraft {
      * Damage is ignored: a damaged tool still uncrafts.
      */
     public static Optional<Result> resolve(Level level, ItemStack input) {
-        if (input.isEmpty() || level == null) {
+        if (input == null || input.isEmpty() || level == null) {
             return Optional.empty();
         }
-        List<Item> preferred = preferredItems(level, input);
-        Result best = null;
-        for (Result candidate : List.of(
-                fromCrafting(level, input, preferred).orElse(null),
-                fromSmithing(level, input, preferred).orElse(null),
-                fromFullUncraft(level, input).orElse(null))) {
-            best = fuller(best, candidate, preferred);
-        }
-        if (best == null || input.getCount() < best.consume()) {
+        try {
+            List<Item> preferred = preferredItems(level, input);
+            Result best = null;
+            // Each source is optional: most items have a crafting recipe but no smithing or full_uncraft one.
+            // 1.0.17 put the three results in List.of(...), which rejects null, so any missing source
+            // crashed the server tick and the client screen. Compare them one by one instead.
+            best = fuller(best, safely("crafting", input, () -> fromCrafting(level, input, preferred)), preferred);
+            best = fuller(best, safely("smithing", input, () -> fromSmithing(level, input, preferred)), preferred);
+            best = fuller(best, safely("full_uncraft", input, () -> fromFullUncraft(level, input)), preferred);
+            if (best == null || best.consume() < 1 || input.getCount() < best.consume()) {
+                return Optional.empty();
+            }
+            return Optional.of(best);
+        } catch (RuntimeException e) {
+            warnOnce("resolve:" + itemId(input), "Decrafter Upgrade could not resolve " + itemId(input) + "; leaving it undecrafted", e);
             return Optional.empty();
         }
-        return Optional.of(best);
+    }
+
+    private static Result safely(String source, ItemStack input, Supplier<Optional<Result>> lookup) {
+        try {
+            Optional<Result> result = lookup.get();
+            if (result == null || result.isEmpty()) {
+                return null;
+            }
+            Result value = result.get();
+            if (value.results() == null || value.results().isEmpty()) {
+                return null;
+            }
+            return value;
+        } catch (RuntimeException e) {
+            warnOnce(source + ":" + itemId(input), "Decrafter Upgrade skipped the " + source + " lookup for " + itemId(input), e);
+            return null;
+        }
+    }
+
+    private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
+
+    /** Logs a problem once per key so a bad recipe does not flood the log from the preview render loop. */
+    public static void warnOnce(String key, String message, Throwable error) {
+        if (WARNED.size() < 512 && WARNED.add(key)) {
+            FdStorageCompat.LOGGER.warn(message, error);
+        }
+    }
+
+    public static String itemId(ItemStack stack) {
+        try {
+            return String.valueOf(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+        } catch (RuntimeException e) {
+            return String.valueOf(stack.getItem());
+        }
     }
 
     /**
@@ -77,18 +122,22 @@ public final class CraftUncraft {
     private static Optional<Result> fromCrafting(Level level, ItemStack input, List<Item> preferred) {
         List<Candidate> matches = new ArrayList<>();
         for (RecipeHolder<CraftingRecipe> holder : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
-            CraftingRecipe recipe = holder.value();
-            ItemStack result = recipe.getResultItem(level.registryAccess());
-            // Custom recipes (dye, repair) report no result. Tier upgrades are special only to copy
-            // components, but they still have a shaped pattern and a real result. Do not skip those.
-            if (result.isEmpty() || result.getItem() != input.getItem() || result.getCount() < 1) {
-                continue;
+            try {
+                CraftingRecipe recipe = holder.value();
+                ItemStack result = recipe == null ? null : recipe.getResultItem(level.registryAccess());
+                // Custom recipes (dye, repair) report no result. Tier upgrades are special only to copy
+                // components, but they still have a shaped pattern and a real result. Do not skip those.
+                if (result == null || result.isEmpty() || result.getItem() != input.getItem() || result.getCount() < 1) {
+                    continue;
+                }
+                List<ItemStack> ingredients = ingredientsOf(ingredientList(recipe), preferred);
+                if (ingredients == null || ingredients.isEmpty()) {
+                    continue;
+                }
+                matches.add(new Candidate(holder.id().toString(), result.getCount(), ingredients, coverage(ingredients, preferred), total(ingredients)));
+            } catch (RuntimeException e) {
+                warnOnce("recipe:" + holder.id(), "Decrafter Upgrade skipped crafting recipe " + holder.id() + " (it could not be read)", e);
             }
-            List<ItemStack> ingredients = ingredientsOf(ingredientList(recipe), preferred);
-            if (ingredients == null || ingredients.isEmpty()) {
-                continue;
-            }
-            matches.add(new Candidate(holder.id().toString(), result.getCount(), ingredients, coverage(ingredients, preferred), total(ingredients)));
         }
         return pick(matches);
     }
@@ -96,28 +145,32 @@ public final class CraftUncraft {
     private static Optional<Result> fromSmithing(Level level, ItemStack input, List<Item> preferred) {
         List<Candidate> matches = new ArrayList<>();
         for (RecipeHolder<SmithingRecipe> holder : level.getRecipeManager().getAllRecipesFor(RecipeType.SMITHING)) {
-            if (!(holder.value() instanceof SmithingTransformRecipe smithing)) {
-                continue;
+            try {
+                if (!(holder.value() instanceof SmithingTransformRecipe smithing)) {
+                    continue;
+                }
+                ItemStack result = smithing.getResultItem(level.registryAccess());
+                if (result == null || result.isEmpty() || result.getItem() != input.getItem() || result.getCount() < 1) {
+                    continue;
+                }
+                List<Ingredient> ingredients = new ArrayList<>(3);
+                Ingredient template = smithingField(smithing, "template");
+                Ingredient base = smithingField(smithing, "base");
+                Ingredient addition = smithingField(smithing, "addition");
+                if (template == null || base == null || addition == null) {
+                    continue;
+                }
+                ingredients.add(template);
+                ingredients.add(base);
+                ingredients.add(addition);
+                List<ItemStack> resolved = ingredientsOf(ingredients, preferred);
+                if (resolved == null || resolved.isEmpty()) {
+                    continue;
+                }
+                matches.add(new Candidate(holder.id().toString(), result.getCount(), resolved, coverage(resolved, preferred), total(resolved)));
+            } catch (RuntimeException e) {
+                warnOnce("recipe:" + holder.id(), "Decrafter Upgrade skipped smithing recipe " + holder.id() + " (it could not be read)", e);
             }
-            ItemStack result = smithing.getResultItem(level.registryAccess());
-            if (result.isEmpty() || result.getItem() != input.getItem() || result.getCount() < 1) {
-                continue;
-            }
-            List<Ingredient> ingredients = new ArrayList<>(3);
-            Ingredient template = smithingField(smithing, "template");
-            Ingredient base = smithingField(smithing, "base");
-            Ingredient addition = smithingField(smithing, "addition");
-            if (template == null || base == null || addition == null) {
-                continue;
-            }
-            ingredients.add(template);
-            ingredients.add(base);
-            ingredients.add(addition);
-            List<ItemStack> resolved = ingredientsOf(ingredients, preferred);
-            if (resolved == null || resolved.isEmpty()) {
-                continue;
-            }
-            matches.add(new Candidate(holder.id().toString(), result.getCount(), resolved, coverage(resolved, preferred), total(resolved)));
         }
         return pick(matches);
     }
@@ -146,10 +199,15 @@ public final class CraftUncraft {
 
     private static Optional<Result> fromFullUncraft(Level level, ItemStack input) {
         Optional<FullUncraftRecipe> recipe = FullUncraftRecipe.find(level, input);
-        if (recipe.isEmpty()) {
+        if (recipe == null || recipe.isEmpty()) {
             return Optional.empty();
         }
-        List<ItemStack> results = recipe.get().copyResults();
+        List<ItemStack> results = new ArrayList<>();
+        for (ItemStack stack : recipe.get().copyResults()) {
+            if (stack != null && !stack.isEmpty()) {
+                results.add(stack);
+            }
+        }
         if (results.isEmpty()) {
             return Optional.empty();
         }
@@ -159,20 +217,20 @@ public final class CraftUncraft {
     private static List<Ingredient> ingredientList(CraftingRecipe recipe) {
         // ShapedRecipe.getIngredients() is the expanded pattern, one entry per grid cell,
         // so eight diamonds stay eight. Read the pattern directly in case a wrapper overrides it.
-        if (recipe instanceof ShapedRecipe shaped) {
-            return shaped.pattern.ingredients();
-        }
-        return recipe.getIngredients();
+        List<Ingredient> list = recipe instanceof ShapedRecipe shaped && shaped.pattern != null
+                ? shaped.pattern.ingredients()
+                : recipe.getIngredients();
+        return list == null ? List.of() : list;
     }
 
     private static List<Item> preferredItems(Level level, ItemStack input) {
         List<Item> items = new ArrayList<>();
         for (FullUncraftRecipe recipe : level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.FULL_UNCRAFT.get()).stream().map(holder -> holder.value()).toList()) {
-            if (!recipe.input().test(input)) {
+            if (recipe == null || recipe.input() == null || recipe.results() == null || !recipe.input().test(input)) {
                 continue;
             }
             for (ItemStack stack : recipe.results()) {
-                if (!stack.isEmpty() && !items.contains(stack.getItem())) {
+                if (stack != null && !stack.isEmpty() && !items.contains(stack.getItem())) {
                     items.add(stack.getItem());
                 }
             }
@@ -186,11 +244,11 @@ public final class CraftUncraft {
     private static List<ItemStack> ingredientsOf(List<Ingredient> ingredients, List<Item> preferred) {
         List<ItemStack> out = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
-            if (ingredient.isEmpty()) {
+            if (ingredient == null || ingredient.isEmpty()) {
                 continue;
             }
             ItemStack[] options = ingredient.getItems();
-            if (options.length == 0) {
+            if (options == null || options.length == 0) {
                 return null;
             }
             ItemStack chosen = choose(options, preferred);
@@ -216,13 +274,13 @@ public final class CraftUncraft {
     private static ItemStack choose(ItemStack[] options, List<Item> preferred) {
         for (Item want : preferred) {
             for (ItemStack option : options) {
-                if (!option.isEmpty() && option.is(want)) {
+                if (option != null && !option.isEmpty() && option.is(want)) {
                     return option.copyWithCount(1);
                 }
             }
         }
         for (ItemStack option : options) {
-            if (!option.isEmpty() && !option.hasCraftingRemainingItem()) {
+            if (option != null && !option.isEmpty() && !option.hasCraftingRemainingItem()) {
                 return option.copyWithCount(1);
             }
         }

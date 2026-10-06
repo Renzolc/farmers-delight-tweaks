@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import dev.renzo.fdstoragecompat.ModBlockEntities;
 import dev.renzo.fdstoragecompat.ModBlocks;
 import dev.renzo.fdstoragecompat.menu.DecrafterMenu;
+import dev.renzo.fdstoragecompat.recipe.CraftUncraft;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -46,6 +47,7 @@ import vectorwing.farmersdelight.common.registry.ModRecipeTypes;
 
 /**
  * Hopper-fed auto cutting board (+ wood breakdown + bed uncraft + reverse-craft fallback).
+ * Items with no decraft result pass through to the output slots unchanged.
  * Tools are built into the machine craft recipe — cutting matches by input ingredient only.
  */
 public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
@@ -53,6 +55,11 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     public static final int OUTPUT_SLOTS = 9;
     public static final int TOTAL_SLOTS = 1 + OUTPUT_SLOTS;
     public static final int PROCESS_INTERVAL = 20; // 1 second
+    /**
+     * Process cycles to wait for more items when a recipe needs a bigger stack (e.g. 4 torches) before
+     * passing the short stack through unchanged. Hoppers add items every cycle while they are feeding.
+     */
+    public static final int SHORT_STACK_WAIT_CYCLES = 5;
 
     /** Vanilla plank → matching wooden slab (1 plank → 2 slabs). */
     private static final Map<Item, Item> PLANK_TO_SLAB = createPlankToSlabMap();
@@ -97,6 +104,8 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     };
 
     private int progress;
+    private int shortStackCount = -1;
+    private int shortStackCycles;
 
     public DecrafterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DECRAFTER.get(), pos, state);
@@ -156,19 +165,42 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         }
         ItemStack input = items.getStackInSlot(INPUT_SLOT);
         if (input.isEmpty()) {
+            resetShortStackWait();
             return;
         }
-        // Never decraft the Decrafter itself
-        if (input.is(ModBlocks.DECRAFTER.asItem())) {
-            return;
+        try {
+            decraftOrPassThrough(input);
+        } catch (RuntimeException e) {
+            // A bad recipe or odd item must not crash the server tick. Treat it as not decraftable.
+            CraftUncraft.warnOnce("decrafter:" + CraftUncraft.itemId(input),
+                    "Decrafter could not decraft " + CraftUncraft.itemId(input) + "; passing it through unchanged", e);
+            try {
+                passThrough(items.getStackInSlot(INPUT_SLOT));
+            } catch (RuntimeException ignored) {
+                // Leave the item in the input slot.
+            }
         }
+    }
 
-        Optional<ResolvedDecraft> resolved = resolveDecraft(input);
+    private void decraftOrPassThrough(ItemStack input) {
+        // Never decraft the Decrafter itself; it passes through like any other non-decraftable item.
+        Optional<ResolvedDecraft> resolved = input.is(ModBlocks.DECRAFTER.asItem())
+                ? Optional.empty()
+                : resolveDecraft(input);
         if (resolved.isEmpty()) {
+            if (!input.is(ModBlocks.DECRAFTER.asItem()) && waitingForMoreInput(input)) {
+                return;
+            }
+            passThrough(input);
             return;
         }
+        resetShortStackWait();
         ResolvedDecraft op = resolved.get();
         List<ItemStack> outputs = op.outputs();
+        if (outputs == null || outputs.isEmpty()) {
+            passThrough(input);
+            return;
+        }
         if (!canInsertAll(outputs)) {
             return;
         }
@@ -184,6 +216,76 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
             ItemHandlerHelper.insertItemStacked(outputInsertView(), out.copy(), false);
         }
         setChanged();
+    }
+
+    /**
+     * Moves an item with no decraft result to the output slots unchanged so hoppers and pipes carry it on.
+     * Whatever does not fit stays in the input until the outputs drain.
+     */
+    private void passThrough(ItemStack input) {
+        resetShortStackWait();
+        if (input.isEmpty()) {
+            return;
+        }
+        ItemStack remainder = ItemHandlerHelper.insertItemStacked(outputInsertView(), input.copy(), false);
+        if (remainder.getCount() == input.getCount()) {
+            return;
+        }
+        items.setStackInSlot(INPUT_SLOT, remainder.isEmpty() ? ItemStack.EMPTY : remainder);
+        setChanged();
+    }
+
+    /**
+     * True while a reverse-craft recipe exists that needs more items than the input holds (a 4-torch craft
+     * with 2 torches in the slot) and the stack is still growing. After {@link #SHORT_STACK_WAIT_CYCLES}
+     * cycles with no new items, the short stack passes through instead of sitting in the input forever.
+     */
+    private boolean waitingForMoreInput(ItemStack input) {
+        if (!couldDecraftWithMore(input)) {
+            resetShortStackWait();
+            return false;
+        }
+        if (input.getCount() != shortStackCount) {
+            shortStackCount = input.getCount();
+            shortStackCycles = 0;
+            return true;
+        }
+        shortStackCycles++;
+        return shortStackCycles < SHORT_STACK_WAIT_CYCLES;
+    }
+
+    private void resetShortStackWait() {
+        shortStackCount = -1;
+        shortStackCycles = 0;
+    }
+
+    private boolean couldDecraftWithMore(ItemStack input) {
+        if ((input.isDamageableItem() && input.isDamaged()) || isDecrafterUpgrade(input)) {
+            return false;
+        }
+        for (RecipeHolder<CraftingRecipe> holder : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
+            try {
+                CraftingRecipe recipe = holder.value();
+                if (recipe == null || recipe.isSpecial()) {
+                    continue;
+                }
+                ItemStack result = recipe.getResultItem(level.registryAccess());
+                if (result == null || result.isEmpty() || result.getItem() != input.getItem()
+                        || result.getCount() <= input.getCount() || result.getCount() > input.getMaxStackSize()) {
+                    continue;
+                }
+                NonNullList<Ingredient> ingredients = recipe.getIngredients();
+                if (ingredients == null || ingredients.isEmpty() || hasUnsafeRemainingItems(ingredients)) {
+                    continue;
+                }
+                if (!ingredientsOf(recipe).isEmpty()) {
+                    return true;
+                }
+            } catch (RuntimeException e) {
+                CraftUncraft.warnOnce("recipe:" + holder.id(), "Decrafter skipped crafting recipe " + holder.id() + " (it could not be read)", e);
+            }
+        }
+        return false;
     }
 
     /**
@@ -308,24 +410,28 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         List<ItemStack> best = null;
         ResourceLocation bestId = null;
         for (RecipeHolder<CuttingBoardRecipe> holder : level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CUTTING.get())) {
-            CuttingBoardRecipe recipe = holder.value();
-            NonNullList<Ingredient> ingredients = recipe.getIngredients();
-            if (ingredients.isEmpty() || !ingredients.getFirst().test(input)) {
-                continue;
-            }
-            List<ItemStack> results = new ArrayList<>();
-            for (ItemStack stack : recipe.getResults()) {
-                if (!stack.isEmpty()) {
-                    results.add(stack.copy());
+            try {
+                CuttingBoardRecipe recipe = holder.value();
+                NonNullList<Ingredient> ingredients = recipe.getIngredients();
+                if (ingredients == null || ingredients.isEmpty() || ingredients.getFirst() == null || !ingredients.getFirst().test(input)) {
+                    continue;
                 }
-            }
-            if (results.isEmpty()) {
-                continue;
-            }
-            ResourceLocation id = holder.id();
-            if (best == null || id.toString().compareTo(bestId.toString()) < 0) {
-                best = results;
-                bestId = id;
+                List<ItemStack> results = new ArrayList<>();
+                for (ItemStack stack : recipe.getResults()) {
+                    if (stack != null && !stack.isEmpty()) {
+                        results.add(stack.copy());
+                    }
+                }
+                if (results.isEmpty()) {
+                    continue;
+                }
+                ResourceLocation id = holder.id();
+                if (best == null || id.toString().compareTo(bestId.toString()) < 0) {
+                    best = results;
+                    bestId = id;
+                }
+            } catch (RuntimeException e) {
+                CraftUncraft.warnOnce("recipe:" + holder.id(), "Decrafter skipped cutting recipe " + holder.id() + " (it could not be read)", e);
             }
         }
         return best == null ? Optional.empty() : Optional.of(best);
@@ -334,29 +440,33 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     private Optional<RecipeHolder<CraftingRecipe>> findBestRecipe(ItemStack input) {
         List<RecipeHolder<CraftingRecipe>> matches = new ArrayList<>();
         for (RecipeHolder<CraftingRecipe> holder : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
-            CraftingRecipe recipe = holder.value();
-            if (recipe.isSpecial()) {
-                continue;
+            try {
+                CraftingRecipe recipe = holder.value();
+                if (recipe.isSpecial()) {
+                    continue;
+                }
+                ItemStack result = recipe.getResultItem(level.registryAccess());
+                if (result == null || result.isEmpty() || result.getItem() != input.getItem()) {
+                    continue;
+                }
+                if (input.getCount() < result.getCount()) {
+                    continue;
+                }
+                NonNullList<Ingredient> ingredients = recipe.getIngredients();
+                if (ingredients.isEmpty()) {
+                    continue;
+                }
+                if (hasUnsafeRemainingItems(ingredients)) {
+                    continue;
+                }
+                List<ItemStack> resolved = ingredientsOf(recipe);
+                if (resolved.isEmpty()) {
+                    continue;
+                }
+                matches.add(holder);
+            } catch (RuntimeException e) {
+                CraftUncraft.warnOnce("recipe:" + holder.id(), "Decrafter skipped crafting recipe " + holder.id() + " (it could not be read)", e);
             }
-            ItemStack result = recipe.getResultItem(level.registryAccess());
-            if (result.isEmpty() || result.getItem() != input.getItem()) {
-                continue;
-            }
-            if (input.getCount() < result.getCount()) {
-                continue;
-            }
-            NonNullList<Ingredient> ingredients = recipe.getIngredients();
-            if (ingredients.isEmpty()) {
-                continue;
-            }
-            if (hasUnsafeRemainingItems(ingredients)) {
-                continue;
-            }
-            List<ItemStack> resolved = ingredientsOf(recipe);
-            if (resolved.isEmpty()) {
-                continue;
-            }
-            matches.add(holder);
         }
         if (matches.isEmpty()) {
             return Optional.empty();
@@ -379,11 +489,11 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
 
     private static boolean hasUnsafeRemainingItems(NonNullList<Ingredient> ingredients) {
         for (Ingredient ing : ingredients) {
-            if (ing.isEmpty()) {
+            if (ing == null || ing.isEmpty()) {
                 continue;
             }
             ItemStack[] stacks = ing.getItems();
-            if (stacks.length == 0) {
+            if (stacks == null || stacks.length == 0) {
                 return true;
             }
             boolean allRemain = true;
@@ -403,11 +513,11 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
     private static List<ItemStack> ingredientsOf(CraftingRecipe recipe) {
         List<ItemStack> out = new ArrayList<>();
         for (Ingredient ing : recipe.getIngredients()) {
-            if (ing.isEmpty()) {
+            if (ing == null || ing.isEmpty()) {
                 continue;
             }
             ItemStack[] options = ing.getItems();
-            if (options.length == 0) {
+            if (options == null || options.length == 0) {
                 return List.of();
             }
             ItemStack chosen = options[0];
