@@ -2,14 +2,10 @@ package dev.renzo.fdstoragecompat;
 
 import java.util.function.Supplier;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -21,22 +17,13 @@ public final class ModCreativeTabs {
     public static final Supplier<CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.fd_storage_compat"))
-                    .icon(() -> new ItemStack(ModBlocks.DECRAFTER.get()))
+                    .icon(() -> new ItemStack(ModBlocks.APPLE_CRATE.get()))
                     .displayItems((params, output) -> {
-                        output.accept(ModBlocks.DECRAFTER.get());
                         for (DeferredBlock<Block> block : ModBlocks.ALL) {
                             output.accept(block.get());
                         }
-                        acceptIfPresent(output, "decrafter_upgrade");
                     })
                     .build());
-
-    private static void acceptIfPresent(CreativeModeTab.Output output, String path) {
-        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(FdStorageCompat.MOD_ID, path));
-        if (item != Items.AIR) {
-            output.accept(item);
-        }
-    }
 
     private ModCreativeTabs() {}
 }

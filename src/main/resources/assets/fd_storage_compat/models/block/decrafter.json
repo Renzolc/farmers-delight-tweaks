@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "fd_storage_compat:block/decrafter_bottom",
-    "side": "fd_storage_compat:block/decrafter_side",
-    "top": "fd_storage_compat:block/decrafter_top"
-  }
-}

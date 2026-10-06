@@ -29,10 +29,10 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.component.SeededContainerLoot;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 /**
- * Rule C: a decrafted container gives back everything it holds, or it is left alone. Runs in a bootstrapped
+ * Rule C: the cutting board guard reads what a container holds, and treats anything it cannot read as full.
+ * Runs in a bootstrapped
  * game (FML JUnit), so real items, components and codecs are used.
  */
 class ContainerContentsTest {
@@ -268,90 +268,34 @@ class ContainerContentsTest {
         assertTrue(rules.passThroughItems.contains("someassemblyrequired:sandwich"));
     }
 
-    // --- ContainerDecraft: contents + results, all or nothing ---
+    // --- cutting board guard ---
 
     @Test
-    void planPutsContentsFirstThenResults() {
+    void guardRefusesAContainerThatHoldsItems() {
         ItemStack box = new ItemStack(Items.SHULKER_BOX);
-        box.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(new ItemStack(Items.DIAMOND, 5))));
-        ContainerDecraft.Base base = new ContainerDecraft.Base(1, List.of(new ItemStack(Items.SHULKER_SHELL, 2), new ItemStack(Items.CHEST)));
-        ContainerDecraft.Plan plan = ContainerDecraft.plan(null, registries, box, base).orElseThrow();
-        assertEquals(1, plan.consume());
-        assertTrue(plan.outputs().get(0).is(Items.DIAMOND));
-        assertEquals(5, total(plan.outputs(), Items.DIAMOND));
-        assertEquals(2, total(plan.outputs(), Items.SHULKER_SHELL));
-        assertEquals(1, total(plan.outputs(), Items.CHEST));
+        box.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(new ItemStack(Items.DIAMOND, 2))));
+        assertTrue(CuttingBoardGuard.holdsItems(null, registries, box));
     }
 
     @Test
-    void planMultipliesContentsByConsumedItems() {
-        ItemStack bundles = new ItemStack(Items.BUNDLE, 1);
-        bundles.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(List.of(new ItemStack(Items.ARROW, 10))));
-        bundles.setCount(2); // bypass max stack size on purpose: both bundles carry the same contents
-        ContainerDecraft.Base base = new ContainerDecraft.Base(2, List.of(new ItemStack(Items.LEATHER, 3)));
-        ContainerDecraft.Plan plan = ContainerDecraft.plan(null, registries, bundles, base).orElseThrow();
-        assertEquals(20, total(plan.outputs(), Items.ARROW));
+    void guardAllowsEmptyContainersAndPlainItems() {
+        assertFalse(CuttingBoardGuard.holdsItems(null, registries, new ItemStack(Items.SHULKER_BOX)));
+        assertFalse(CuttingBoardGuard.holdsItems(null, registries, new ItemStack(Items.OAK_PLANKS)));
+        assertFalse(CuttingBoardGuard.holdsItems(null, registries, ItemStack.EMPTY));
     }
 
     @Test
-    void unreadableContainerHasNoPlan() {
+    void guardTreatsUnreadableContentsAsFull() {
         ItemStack chest = new ItemStack(Items.CHEST);
         CompoundTag be = new CompoundTag();
         be.putString("id", "minecraft:chest");
-        be.put("Items", new ListTag());
-        be.putString("Lock", "key");
+        ListTag list = new ListTag();
+        CompoundTag slot = (CompoundTag) new ItemStack(Items.DIAMOND, 9).save(registries);
+        slot.putByte("Slot", (byte) 0);
+        list.add(slot);
+        be.put("Items", list);
         chest.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(be));
-        assertTrue(ContainerDecraft.plan(null, registries, chest, new ContainerDecraft.Base(1, List.of(new ItemStack(Items.OAK_PLANKS, 8)))).isEmpty());
-    }
-
-    @Test
-    void noRecipeMeansNoPlanForNormalContainers() {
-        ItemStack box = new ItemStack(Items.SHULKER_BOX);
-        box.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(new ItemStack(Items.DIAMOND))));
-        assertTrue(ContainerDecraft.plan(null, registries, box, null).isEmpty());
-    }
-
-    @Test
-    void oversizedStacksAreSplit() {
-        List<ItemStack> split = ContainerDecraft.splitToStackSize(List.of(new ItemStack(Items.STONE, 200), new ItemStack(Items.ENDER_PEARL, 20)));
-        assertEquals(List.of(64, 64, 64, 8, 16, 4), split.stream().map(ItemStack::getCount).toList());
-    }
-
-    @Test
-    void insertIsAllOrNothing() {
-        ItemStackHandler outputs = new ItemStackHandler(3);
-        outputs.setStackInSlot(0, new ItemStack(Items.DIRT, 64));
-        outputs.setStackInSlot(1, new ItemStack(Items.STONE, 60));
-        List<ItemStack> tooMuch = List.of(new ItemStack(Items.STONE, 4), new ItemStack(Items.DIAMOND, 64), new ItemStack(Items.EMERALD, 1));
-        assertFalse(ContainerDecraft.insertAllOrNothing(outputs, tooMuch));
-        assertEquals(64, outputs.getStackInSlot(0).getCount());
-        assertEquals(60, outputs.getStackInSlot(1).getCount());
-        assertTrue(outputs.getStackInSlot(2).isEmpty(), "a failed insert leaves the outputs exactly as they were");
-
-        List<ItemStack> fits = List.of(new ItemStack(Items.STONE, 4), new ItemStack(Items.DIAMOND, 64));
-        assertTrue(ContainerDecraft.insertAllOrNothing(outputs, fits));
-        assertEquals(64, outputs.getStackInSlot(1).getCount());
-        assertEquals(64, outputs.getStackInSlot(2).getCount());
-    }
-
-    @Test
-    void nothingIsLostForAFullShulker() {
-        List<ItemStack> inside = new ArrayList<>();
-        for (int i = 0; i < 27; i++) {
-            inside.add(new ItemStack(i % 2 == 0 ? Items.COBBLESTONE : Items.IRON_INGOT, 64));
-        }
-        ItemStack box = new ItemStack(Items.SHULKER_BOX);
-        box.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inside));
-        ContainerDecraft.Plan plan = ContainerDecraft.plan(null, registries, box,
-                new ContainerDecraft.Base(1, List.of(new ItemStack(Items.SHULKER_SHELL, 2), new ItemStack(Items.CHEST)))).orElseThrow();
-        assertEquals(14 * 64, total(plan.outputs(), Items.COBBLESTONE));
-        assertEquals(13 * 64, total(plan.outputs(), Items.IRON_INGOT));
-        // Nine output slots cannot hold 27 stacks: the insert fails and the outputs stay empty.
-        ItemStackHandler nine = new ItemStackHandler(9);
-        assertFalse(ContainerDecraft.insertAllOrNothing(nine, plan.outputs()));
-        for (int i = 0; i < 9; i++) {
-            assertTrue(nine.getStackInSlot(i).isEmpty());
-        }
+        assertTrue(CuttingBoardGuard.holdsItems(null, registries, chest));
     }
 
     // --- pure NBT helpers ---

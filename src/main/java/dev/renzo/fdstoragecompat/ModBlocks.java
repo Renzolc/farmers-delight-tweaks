@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import dev.renzo.fdstoragecompat.block.DecrafterBlock;
-
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -20,9 +18,6 @@ public final class ModBlocks {
     /** All storage blocks in creative/tab order. */
     public static final List<DeferredBlock<Block>> ALL = new ArrayList<>();
 
-    
-    public static final DeferredBlock<Block> DECRAFTER = BLOCKS.register("decrafter",
-            () -> new DecrafterBlock(decrafterProps()));
 
     // Food crates
     public static final DeferredBlock<Block> APPLE_CRATE = crate("apple_crate");
@@ -109,16 +104,6 @@ public final class ModBlocks {
         DeferredBlock<Block> block = BLOCKS.register(name, supplier);
         ALL.add(block);
         return block;
-    }
-
-    /** Like a crafting table: breakable by hand; axe preferred via #minecraft:mineable/axe. */
-    private static BlockBehaviour.Properties decrafterProps() {
-        return BlockBehaviour.Properties.of()
-                .mapColor(MapColor.WOOD)
-                .instrument(NoteBlockInstrument.BASS)
-                .strength(2.5F)
-                .sound(SoundType.WOOD)
-                .ignitedByLava();
     }
 
     private static BlockBehaviour.Properties storageProps() {

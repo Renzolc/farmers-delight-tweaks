@@ -86,7 +86,7 @@ final class SophisticatedContents {
             }, true));
         } catch (ReflectiveOperationException | ClassCastException | LinkageError e) {
             ContainerContents.warnOnce("storage:" + ContainerContents.itemId(stack),
-                    "Decrafter left a storage item alone; its contents could not be read", e);
+                    "Cutting board guard could not read a storage item's contents; treating it as not empty", e);
             return Optional.empty();
         }
     }

@@ -53,10 +53,6 @@ def collect_unlock_keys(data: dict, recipe_path: Path) -> list[tuple[str, dict]]
     rid = recipe_path.stem
     rtype = data["type"]
 
-    # Special-case decrafter: unlock with crates tag
-    if rid == "decrafter":
-        return [("has_crate", inventory_predicate(tag="fd_storage_compat:crates"))]
-
     keys: list[tuple[str, dict]] = []
     seen: set[str] = set()
 

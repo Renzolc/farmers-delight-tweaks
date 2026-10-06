@@ -8,7 +8,6 @@ public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FdStorageCompat.MOD_ID);
 
     static {
-        ITEMS.registerSimpleBlockItem(ModBlocks.DECRAFTER);
         for (DeferredBlock<Block> block : ModBlocks.ALL) {
             ITEMS.registerSimpleBlockItem(block);
         }

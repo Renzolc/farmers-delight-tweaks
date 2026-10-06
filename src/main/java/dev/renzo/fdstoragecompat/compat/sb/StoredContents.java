@@ -20,7 +20,7 @@ import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageStackLifecycle
  * Sophisticated Backpacks side of container emptying. Only called when Sophisticated Backpacks is loaded.
  * Everything else (vanilla, Create, Supplementaries, Sophisticated Storage...) is in
  * {@link dev.renzo.fdstoragecompat.contents.ContainerContents}.
- * Empty means "do not decraft": the contents could not be read safely.
+ * Empty means "treat it as holding items": the contents could not be read safely.
  */
 public final class StoredContents {
     private StoredContents() {
@@ -31,7 +31,7 @@ public final class StoredContents {
     }
 
     public static Optional<ContainerContents.Extraction> backpack(ItemStack stack) {
-        // A linked endpoint is a pointer at another backpack. Decrafting it would take that backpack's items.
+        // A linked endpoint is a pointer at another backpack. Its contents belong to another backpack, so it is never treated as empty.
         if (LinkedStorageStackLifecycle.classifyEndpoint(stack) == LinkedStorageEndpointStackState.ENDPOINT) {
             return Optional.empty();
         }

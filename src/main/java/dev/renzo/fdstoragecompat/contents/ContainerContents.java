@@ -35,11 +35,15 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 
 /**
- * Reads the items stored inside an item (Rule C) so a decraft can hand them back before the container is used up.
+ * Reads the items stored inside an item (Rule C) so the cutting board guard can tell an empty container from one that still holds something.
  *
  * <p>{@link Optional#empty()} means "this item holds something that cannot be read safely": the caller must
  * pass the item through unchanged. Nothing here hard-depends on another mod; mod components are looked up by id
  * from {@link ContainerRules}.
+ *
+ * <p>Farmer's Delight Tweaks only uses this read side for the cutting board guard ({@link CuttingBoardGuard}); the
+ * machines that actually empty containers moved to Disassembly Delight, which ships its own copy of this reader.
+ * Here "pass through" simply means "treat the item as still holding something".
  *
  * <p>Order: forced pass-through ids, Sophisticated storage (contents live in saved data, not on the stack),
  * then every component in the stack's patch: a known reader, a ghost (filters, previews), a pass-through
@@ -83,7 +87,7 @@ public final class ContainerContents {
         try {
             return extractUnchecked(level, registries, stack);
         } catch (RuntimeException | LinkageError e) {
-            warnOnce("extract:" + itemId(stack), "Decrafter left " + itemId(stack) + " alone; its contents could not be read", e);
+            warnOnce("extract:" + itemId(stack), "Could not read the contents of " + itemId(stack) + "; treating it as not empty", e);
             return Optional.empty();
         }
     }
@@ -93,7 +97,7 @@ public final class ContainerContents {
         return ContainerRules.get().passThroughItems.contains(itemId(stack));
     }
 
-    /** Items whose decraft is "hand back the contents, the wrapper is used up" (Create packages). */
+    /** Items that are only a wrapper around their contents (Create packages). */
     public static boolean isContentsOnly(ItemStack stack) {
         for (String tag : ContainerRules.get().contentsOnlyTags) {
             ResourceLocation id = ResourceLocation.tryParse(tag);

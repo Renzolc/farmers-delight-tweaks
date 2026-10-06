@@ -42,8 +42,6 @@ neoForge {
         minecraftVersion = project.parchment_minecraft_version
     }
 
-    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
-
     // Minecraft/NeoForge classes for the game-test source set.
     addModdingDependenciesTo(sourceSets.gametest)
 
@@ -57,7 +55,7 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
-        // Rule C end-to-end tests (src/gametest): ./gradlew runGameTestServer
+        // In-world tests (src/gametest): ./gradlew runGameTestServer
         gameTestServer {
             type = "gameTestServer"
             sourceSet = sourceSets.gametest
@@ -104,7 +102,7 @@ dependencies {
     gametestRuntimeOnly files('libs/FarmersDelight.jar')
 }
 
-// Rule C coverage: every container item found in the modpack scan is emptied by a reader or passes through.
+// Rule C coverage: every container item found in the modpack scan is read by the cutting board guard or treated as full.
 // Skipped when the scan folder (proposals.csv + jars/) is not present on this machine.
 def decraftScan = providers.environmentVariable('FD_DECRAFT_SCAN').orElse('/workspace/fd-decraft-scan').get()
 tasks.register('checkContainerCoverage', Exec) {

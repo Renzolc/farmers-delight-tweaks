@@ -2,53 +2,41 @@ package dev.renzo.fdstoragecompat;
 
 import org.slf4j.Logger;
 
-import dev.renzo.fdstoragecompat.blockentity.DecrafterBlockEntity;
-import dev.renzo.fdstoragecompat.client.ClientModEvents;
-import dev.renzo.fdstoragecompat.recipe.ModRecipeTypes;
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.core.Direction;
-
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 @Mod(FdStorageCompat.MOD_ID)
 public class FdStorageCompat {
     public static final String MOD_ID = "fd_storage_compat";
+    public static final String DISASSEMBLY_DELIGHT = "disassembly_delight";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public FdStorageCompat(IEventBus modEventBus) {
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
-        ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
-        ModMenus.MENUS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
-        ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
-        ModRecipeTypes.SERIALIZERS.register(modEventBus);
-        modEventBus.addListener(this::registerCapabilities);
         // Rule C: never cut a storage item that still holds something on a Farmer's Delight cutting board.
         dev.renzo.fdstoragecompat.contents.CuttingBoardGuard.register();
-        if (ModList.get().isLoaded("sophisticatedbackpacks")) {
-            dev.renzo.fdstoragecompat.compat.sb.DecrafterUpgradeSetup.init(modEventBus);
-            if (FMLEnvironment.dist == Dist.CLIENT) {
-                dev.renzo.fdstoragecompat.client.DecrafterUpgradeClientSetup.init(modEventBus);
-            }
-        }
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            ClientModEvents.register(modEventBus);
-        }
+        warnIfDisassemblyDelightMissing();
         LOGGER.info("Farmer's Delight Tweaks loaded");
     }
 
-    private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ModBlockEntities.DECRAFTER.get(),
-                (DecrafterBlockEntity be, Direction side) -> be.getHandlerForSide(side));
+    /**
+     * 1.1.0 moved the Decrafter and the Decrafter Upgrade into the separate Disassembly Delight mod
+     * (disassembly_delight:disassembler / disassembler_upgrade), which maps the old ids onto the new ones.
+     * Without it, Decrafters in existing worlds and Decrafter Upgrades in backpacks are dropped as unknown ids.
+     */
+    private static void warnIfDisassemblyDelightMissing() {
+        if (ModList.get().isLoaded(DISASSEMBLY_DELIGHT)) {
+            return;
+        }
+        LOGGER.warn("Farmer's Delight Tweaks 1.1.0 no longer contains the Decrafter or the Decrafter Upgrade. "
+                + "They are now the Disassembly Table and the Disassembly Table Upgrade in the Disassembly Delight mod "
+                + "(https://github.com/Renzolc/disassembly-delight). Install Disassembly Delight before opening a world "
+                + "that has Decrafters (fd_storage_compat:decrafter) or Decrafter Upgrades (fd_storage_compat:decrafter_upgrade), "
+                + "or they will be removed from that world.");
     }
 }

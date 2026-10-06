@@ -36,3 +36,12 @@ description='''${mod_description}'''
     versionRange="[3.20,)"
     ordering="AFTER"
     side="BOTH"
+
+# The Decrafter and Decrafter Upgrade moved to Disassembly Delight in 1.1.0. Optional, but needed to keep
+# existing Decrafters (it maps fd_storage_compat:decrafter onto disassembly_delight:disassembler).
+[[dependencies.${mod_id}]]
+    modId="disassembly_delight"
+    type="optional"
+    versionRange="[1.0.0,)"
+    ordering="NONE"
+    side="BOTH"

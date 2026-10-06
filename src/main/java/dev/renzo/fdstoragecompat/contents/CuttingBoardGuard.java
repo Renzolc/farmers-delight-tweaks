@@ -2,6 +2,9 @@ package dev.renzo.fdstoragecompat.contents;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -44,13 +47,18 @@ public final class CuttingBoardGuard {
 
     /** True if the item holds anything, or holds something this mod cannot read. */
     public static boolean holdsItems(Level level, ItemStack stack) {
+        return holdsItems(level, level.registryAccess(), stack);
+    }
+
+    /** Same as {@link #holdsItems(Level, ItemStack)}; the level may be null in tests (no Sophisticated storage). */
+    public static boolean holdsItems(@Nullable Level level, HolderLookup.Provider registries, ItemStack stack) {
         if (stack.isEmpty()) {
             return false;
         }
         if (ContainerContents.isForcedPassThrough(stack)) {
             return true;
         }
-        Optional<ContainerContents.Extraction> contents = ContainerContents.extract(level, stack);
+        Optional<ContainerContents.Extraction> contents = ContainerContents.extract(level, registries, stack);
         return contents.isEmpty() || !contents.get().isEmpty();
     }
 }

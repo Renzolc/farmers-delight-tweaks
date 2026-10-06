@@ -1,6 +1,5 @@
 {
   "itemGroup.fd_storage_compat": "Farmer's Delight Tweaks",
-  "block.fd_storage_compat.decrafter": "Decrafter",
   "block.fd_storage_compat.apple_crate": "Apple Crate",
   "block.fd_storage_compat.sweet_berry_crate": "Sweet Berry Crate",
   "block.fd_storage_compat.glow_berry_crate": "Glow Berry Crate",
@@ -63,11 +62,5 @@
   "block.fd_storage_compat.red_blossom_sapling_sack": "Red Blossom Sapling Sack",
   "block.fd_storage_compat.yellow_blossom_sapling_sack": "Yellow Blossom Sapling Sack",
   "block.fd_storage_compat.flax_seed_sack": "Flax Seed Sack",
-  "container.fd_storage_compat.decrafter": "Decrafter",
-  "item.fd_storage_compat.decrafter_upgrade": "Decrafter Upgrade",
-  "item.fd_storage_compat.decrafter_upgrade.tooltip": "Put an item in the slot. Any crafting recipe is reversed at full counts into the backpack, stored items first. If they do not fit, the item stays.",
-  "gui.fd_storage_compat.decrafter_upgrade": "Decrafter Upgrade",
-  "gui.fd_storage_compat.decrafter_upgrade.tooltip": "Full ingredients go into the backpack",
-  "gui.fd_storage_compat.decrafter_upgrade.into_backpack": "Into backpack",
   "message.fd_storage_compat.cutting_board_contents": "%s still has items inside. Take it off the board and empty it first."
 }
