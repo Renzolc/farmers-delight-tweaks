@@ -1,10 +1,10 @@
-package dev.renzo.fdstoragecompat.compat.sb;
+package dev.renzo.fdtweaks.compat.sb;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import dev.renzo.fdstoragecompat.contents.ContainerContents;
+import dev.renzo.fdtweaks.contents.ContainerContents;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -19,7 +19,7 @@ import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageStackLifecycle
 /**
  * Sophisticated Backpacks side of container emptying. Only called when Sophisticated Backpacks is loaded.
  * Everything else (vanilla, Create, Supplementaries, Sophisticated Storage...) is in
- * {@link dev.renzo.fdstoragecompat.contents.ContainerContents}.
+ * {@link dev.renzo.fdtweaks.contents.ContainerContents}.
  * Empty means "treat it as holding items": the contents could not be read safely.
  */
 public final class StoredContents {

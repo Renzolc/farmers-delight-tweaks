@@ -1,10 +1,10 @@
-package dev.renzo.fdstoragecompat.gametest;
+package dev.renzo.fdtweaks.gametest;
 
 import java.util.List;
 
-import dev.renzo.fdstoragecompat.FdStorageCompat;
-import dev.renzo.fdstoragecompat.ModBlocks;
-import dev.renzo.fdstoragecompat.contents.CuttingBoardGuard;
+import dev.renzo.fdtweaks.FdStorageCompat;
+import dev.renzo.fdtweaks.ModBlocks;
+import dev.renzo.fdtweaks.contents.CuttingBoardGuard;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;

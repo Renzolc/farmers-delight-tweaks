@@ -1,4 +1,4 @@
-package dev.renzo.fdstoragecompat.contents;
+package dev.renzo.fdtweaks.contents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import dev.renzo.fdstoragecompat.FdStorageCompat;
+import dev.renzo.fdtweaks.FdStorageCompat;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 

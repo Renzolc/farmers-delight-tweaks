@@ -1,4 +1,4 @@
-package dev.renzo.fdstoragecompat;
+package dev.renzo.fdtweaks;
 
 import java.util.function.Supplier;
 

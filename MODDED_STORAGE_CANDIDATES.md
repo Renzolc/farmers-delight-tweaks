@@ -9,7 +9,7 @@ Research-only list of **crops / seeds / saplings / similar farmable produce** th
 | Jar cache | `/workspace/renzo-mods-scan/jars` (27 delight-focused jars previously copied from Renzo) |
 | Existing fd_storage_compat | `ModBlocks.java` + recipes under `data/fd_storage_compat/recipe/` |
 | Cross-check | Farmer's Delight, Crate Delight, Storage Delight (furniture only), Quark compressed crops, and per-addon crates (Cultural / Veggies / Fruits / Expanded / Rustic / Crabber's / My Nether's / Miner's / End's) |
-| Remote mods folder | `Shell` with `machineId `6bb91937-bb6c-414f-9c54-703abcae940a`` was **not usable from this executor** (commands stayed on the box). Full Renzo `mods/` listing (Create, Atmosphere, Evercrops, Sable Companion, Chipped, etc.) was **not** re-scanned live. Re-run jar listing on the user machine before treating this as exhaustive. |
+| Remote mods folder | The user machine's mods folder was **not reachable from this executor** (commands stayed on the box). Full Renzo `mods/` listing (Create, Atmosphere, Evercrops, Sable Companion, Chipped, etc.) was **not** re-scanned live. Re-run jar listing on the user machine before treating this as exhaustive. |
 
 **Out of scope for this pass:** food-tag bridges; cooked dishes; decorative wood furniture; Quark/Crate Delight duplicates of vanilla items already handled by fd_storage_compat or Quark.
 
@@ -142,7 +142,7 @@ Implement in this order for maximum farm QoL with least duplication:
 
 ### P3 — After live Renzo mods scan
 
-Re-list ``C:\Users\renzo\curseforge\minecraft\Instances\Renzo\mods`` on machine `6bb91937-bb6c-414f-9c54-703abcae940a` and diff for farming mods **not** in the jar cache, especially: Create (no crops), Atmosphere / Evercrops / Sable Companion / Farmers Respite / Ube's Delight / Croptopia-likes / any extra wood saplings. Add rows here before coding those.
+Re-list the Renzo instance's mods folder and diff for farming mods **not** in the jar cache, especially: Create (no crops), Atmosphere / Evercrops / Sable Companion / Farmers Respite / Ube's Delight / Croptopia-likes / any extra wood saplings. Add rows here before coding those.
 
 ---
 

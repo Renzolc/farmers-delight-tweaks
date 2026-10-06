@@ -1,4 +1,4 @@
-package dev.renzo.fdstoragecompat.contents;
+package dev.renzo.fdtweaks.contents;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ final class SophisticatedContents {
     }
 
     static boolean isStorageItem(ItemStack stack) {
-        if (isLoaded("sophisticatedbackpacks") && dev.renzo.fdstoragecompat.compat.sb.StoredContents.isBackpack(stack)) {
+        if (isLoaded("sophisticatedbackpacks") && dev.renzo.fdtweaks.compat.sb.StoredContents.isBackpack(stack)) {
             return true;
         }
         Class<?> storageItem = storageBlockItemClass();
@@ -40,8 +40,8 @@ final class SophisticatedContents {
     }
 
     static Optional<ContainerContents.Extraction> extract(Level level, ItemStack stack) {
-        if (isLoaded("sophisticatedbackpacks") && dev.renzo.fdstoragecompat.compat.sb.StoredContents.isBackpack(stack)) {
-            return dev.renzo.fdstoragecompat.compat.sb.StoredContents.backpack(stack);
+        if (isLoaded("sophisticatedbackpacks") && dev.renzo.fdtweaks.compat.sb.StoredContents.isBackpack(stack)) {
+            return dev.renzo.fdtweaks.compat.sb.StoredContents.backpack(stack);
         }
         return storage(level, stack);
     }

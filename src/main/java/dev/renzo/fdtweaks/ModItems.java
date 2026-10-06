@@ -1,4 +1,4 @@
-package dev.renzo.fdstoragecompat;
+package dev.renzo.fdtweaks;
 
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredBlock;

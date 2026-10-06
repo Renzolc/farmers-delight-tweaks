@@ -1,4 +1,4 @@
-package dev.renzo.fdstoragecompat.contents;
+package dev.renzo.fdtweaks.contents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

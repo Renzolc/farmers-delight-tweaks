@@ -1,4 +1,4 @@
-package dev.renzo.fdstoragecompat;
+package dev.renzo.fdtweaks;
 
 import org.slf4j.Logger;
 
@@ -19,7 +19,7 @@ public class FdStorageCompat {
         ModItems.ITEMS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         // Rule C: never cut a storage item that still holds something on a Farmer's Delight cutting board.
-        dev.renzo.fdstoragecompat.contents.CuttingBoardGuard.register();
+        dev.renzo.fdtweaks.contents.CuttingBoardGuard.register();
         warnIfDisassemblyDelightMissing();
         LOGGER.info("Farmer's Delight Tweaks loaded");
     }
