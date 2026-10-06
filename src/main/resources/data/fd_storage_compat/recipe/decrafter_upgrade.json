@@ -5,26 +5,22 @@
       "modid": "sophisticatedbackpacks"
     }
   ],
-  "type": "minecraft:crafting_shapeless",
+  "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "show_notification": true,
-  "ingredients": [
-    {
+  "key": {
+    "L": {
       "item": "minecraft:leather"
     },
-    {
-      "item": "minecraft:leather"
-    },
-    {
-      "item": "minecraft:leather"
-    },
-    {
-      "item": "minecraft:leather"
-    },
-    {
+    "D": {
       "item": "fd_storage_compat:decrafter"
     }
+  },
+  "pattern": [
+    " L ",
+    "LDL",
+    " L "
   ],
+  "show_notification": true,
   "result": {
     "count": 1,
     "id": "fd_storage_compat:decrafter_upgrade"
