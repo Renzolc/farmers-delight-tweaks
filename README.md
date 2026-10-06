@@ -82,7 +82,7 @@ Passed through unchanged: Create minecart contraptions, Some Assembly Required s
 
 When Sophisticated Backpacks is installed, one upgrade is added: **Decrafter Upgrade** (`fd_storage_compat:decrafter_upgrade`).
 
-Craft it shapeless with 4 leather and 1 Decrafter. Only one fits in a backpack.
+Craft it with the Decrafter in the center slot and leather in the top, left, right and bottom slots (a plus shape, corners empty). Only one fits in a backpack.
 
 Open the backpack, open the upgrade, and put an item in the input slot. If that item has a crafting recipe, the full ingredient counts are inserted into the backpack. Sophisticated Backpacks tier upgrades are included, so a diamond backpack returns 8 diamonds and the gold backpack it was crafted from. Tag ingredients use the same item this mod already picked in its full-uncraft data, or the first registered item in the tag. Items with no crafting recipe are left alone, except uncrafts this mod already defines. Damaged tools are uncrafted anyway. If the ingredients (and anything stored inside the item) do not fit, the input stays. There is no take-by-hand grid.
 
