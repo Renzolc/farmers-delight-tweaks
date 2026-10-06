@@ -65,10 +65,18 @@ When `create` is installed, cutting-board recipes (also used by the Decrafter) s
 
 ### Sophisticated Backpacks / Storage
 
-When `sophisticatedbackpacks` / `sophisticatedstorage` are installed, cutting-board recipes (also used by the Decrafter) salvage backpacks, storage containers, and upgrades back toward previous tiers / main materials. Recipes match by item id only — **empty** backpacks and storage before uncrafting on the cutting board or Decrafter block, or contents are lost. The Decrafter Upgrade moves stored items into the backpack instead. Optional Chipped/Sawmill upgrades and creative infinity upgrades are skipped.
+When `sophisticatedbackpacks` / `sophisticatedstorage` are installed, cutting-board recipes (also used by the Decrafter) salvage backpacks, storage containers, and upgrades back toward previous tiers / main materials. Recipes match by item id. The Decrafter block and the Decrafter Upgrade hand back everything stored inside first (see Stored contents below). The cutting board cannot return stored items, so it refuses to cut a container that still holds something; empty it first. Optional Chipped/Sawmill upgrades and creative infinity upgrades are skipped.
 
 Crafting recipes auto-unlock in the recipe book when you obtain the required ingredients (or a crate/sack for unpack recipes).
 
+
+### Stored contents
+
+The Decrafter block and the Decrafter Upgrade never destroy what is inside a container. When they decraft one, its stored items come out first, then its own decraft results. If all of that does not fit (the block's 9 output slots, or the backpack), nothing is used up and the container waits. In the Decrafter block, a container whose contents could never fit in 9 empty slots (a full shulker box) passes through whole.
+
+Read and emptied: shulker boxes, bundles, decorated pots, charged crossbows, pick-block copies of chests, barrels, furnaces, cabinets and baskets, Sophisticated Backpacks and Storage (inventory and upgrades, including Sophisticated Emerald Upgrade storage), Sophisticated upgrades with an inventory, Create toolboxes, Supplementaries safe, sack, presents, jar, urn, quiver and lunch basket, Farmer's Delight and Miner's Delight cooking pots and the skillet, Tide rods and the fish satchel, Construction Wand cores and the void sack. Create packages are unwrapped: the contents come out and the package is used up.
+
+Passed through unchanged: Create minecart contraptions, Some Assembly Required sandwiches, Sophisticated Storage in Motion carts and boats, and anything holding a fluid, a mob, an unrolled loot table, pick-block block entity data, a linked Sophisticated endpoint, or item data this mod cannot read. The rules are in `fd_storage_compat/container_rules.json`; `./gradlew check` runs the JUnit tests and a coverage check against the modpack scan, and `./gradlew runGameTestServer` runs in-world Decrafter tests.
 
 ### Decrafter Upgrade
 
@@ -78,6 +86,6 @@ Craft it shapeless with 4 leather and 1 Decrafter. Only one fits in a backpack.
 
 Open the backpack, open the upgrade, and put an item in the input slot. If that item has a crafting recipe, the full ingredient counts are inserted into the backpack. Sophisticated Backpacks tier upgrades are included, so a diamond backpack returns 8 diamonds and the gold backpack it was crafted from. Tag ingredients use the same item this mod already picked in its full-uncraft data, or the first registered item in the tag. Items with no crafting recipe are left alone, except uncrafts this mod already defines. Damaged tools are uncrafted anyway. If the ingredients (and anything stored inside the item) do not fit, the input stays. There is no take-by-hand grid.
 
-Containers match by item id even when they have contents. Stored items are moved into the backpack first, then the craft ingredients, and the container is emptied only after that insert succeeds. A linked backpack endpoint is left alone (it points at another backpack). A container that holds fluid is left alone. The cutting board and Decrafter block still do not return full counts, and they still do not uncraft the upgrade.
+Containers match by item id even when they have contents. Stored items are moved into the backpack first, then the craft ingredients, and the container is emptied only after that insert succeeds (see Stored contents above). The cutting board and Decrafter block still do not return full counts, and they still do not uncraft the upgrade.
 
 The cutting board and the Decrafter block keep their partial salvage. Full counts exist only through this upgrade, including a full return of the upgrade itself (4 leather + 1 Decrafter). The cutting board has no recipe for it, and the Decrafter block will not reverse-craft it, so you need a Decrafter Upgrade already installed and a spare upgrade in its input.

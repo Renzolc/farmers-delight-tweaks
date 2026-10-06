@@ -68,5 +68,6 @@
   "item.fd_storage_compat.decrafter_upgrade.tooltip": "Put an item in the slot. Any crafting recipe is reversed at full counts into the backpack, stored items first. If they do not fit, the item stays.",
   "gui.fd_storage_compat.decrafter_upgrade": "Decrafter Upgrade",
   "gui.fd_storage_compat.decrafter_upgrade.tooltip": "Full ingredients go into the backpack",
-  "gui.fd_storage_compat.decrafter_upgrade.into_backpack": "Into backpack"
+  "gui.fd_storage_compat.decrafter_upgrade.into_backpack": "Into backpack",
+  "message.fd_storage_compat.cutting_board_contents": "%s still has items inside. Take it off the board and empty it first."
 }

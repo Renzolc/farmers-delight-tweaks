@@ -1,12 +1,12 @@
 package dev.renzo.fdstoragecompat.compat.sb;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import dev.renzo.fdstoragecompat.contents.ContainerDecraft;
 import dev.renzo.fdstoragecompat.recipe.CraftUncraft;
 
 import net.minecraft.core.BlockPos;
@@ -98,9 +98,12 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
             return passThrough(input);
         }
         Resolved op = resolved.get();
+        if (input.getCount() < op.consume()) {
+            return false;
+        }
         IItemHandler backpack = storageWrapper.getInventoryForUpgradeProcessing();
         // Contents first, then craft ingredients. All of it fits, or the input stays.
-        if (!insertAll(backpack, op.results())) {
+        if (backpack == null || !insertAll(backpack, op.results())) {
             return false;
         }
         op.clearContents().run();
@@ -170,25 +173,19 @@ public class DecrafterUpgradeWrapper extends UpgradeWrapperBase<DecrafterUpgrade
         }
     }
 
+    /**
+     * Decraft result plus the input's stored contents (shared with the Decrafter block). An input whose contents
+     * cannot be read resolves to nothing, so it is moved into the backpack unchanged.
+     */
     private static Optional<Resolved> resolveStack(Level level, ItemStack input) {
         if (input.isEmpty() || level == null) {
             return Optional.empty();
         }
-        Optional<CraftUncraft.Result> crafted = CraftUncraft.resolve(level, input);
-        if (crafted.isEmpty()) {
-            return Optional.empty();
-        }
-        Optional<StoredContents.Extraction> contents = StoredContents.extract(level, input);
-        if (contents == null || contents.isEmpty()) {
-            return Optional.empty();
-        }
-        List<ItemStack> results = new ArrayList<>();
-        results.addAll(contents.get().stacks());
-        results.addAll(crafted.get().results());
-        if (results.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(new Resolved(crafted.get().consume(), results, contents.get().clearAfterInsert()));
+        ContainerDecraft.Base base = CraftUncraft.resolve(level, input)
+                .map(crafted -> new ContainerDecraft.Base(crafted.consume(), crafted.results()))
+                .orElse(null);
+        return ContainerDecraft.plan(level, input, base)
+                .map(plan -> new Resolved(plan.consume(), plan.outputs(), plan.afterCommit()));
     }
 
     private record Resolved(int consume, List<ItemStack> results, Runnable clearContents) {}

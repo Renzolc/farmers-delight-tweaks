@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 import dev.renzo.fdstoragecompat.ModBlockEntities;
 import dev.renzo.fdstoragecompat.ModBlocks;
 import dev.renzo.fdstoragecompat.menu.DecrafterMenu;
+import dev.renzo.fdstoragecompat.contents.ContainerContents;
+import dev.renzo.fdstoragecompat.contents.ContainerDecraft;
 import dev.renzo.fdstoragecompat.recipe.CraftUncraft;
 
 import net.minecraft.core.BlockPos;
@@ -184,37 +186,47 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
 
     private void decraftOrPassThrough(ItemStack input) {
         // Never decraft the Decrafter itself; it passes through like any other non-decraftable item.
-        Optional<ResolvedDecraft> resolved = input.is(ModBlocks.DECRAFTER.asItem())
+        boolean isDecrafter = input.is(ModBlocks.DECRAFTER.asItem());
+        Optional<ResolvedDecraft> resolved = isDecrafter || ContainerContents.isForcedPassThrough(input)
                 ? Optional.empty()
                 : resolveDecraft(input);
-        if (resolved.isEmpty()) {
-            if (!input.is(ModBlocks.DECRAFTER.asItem()) && waitingForMoreInput(input)) {
+        ContainerDecraft.Base base = resolved
+                .filter(op -> op.outputs() != null && !op.outputs().isEmpty())
+                .map(op -> new ContainerDecraft.Base(op.consumeCount(), op.outputs()))
+                .orElse(null);
+        // Stored contents come back first, with the decraft results (Rule C). Unreadable contents → pass through.
+        Optional<ContainerDecraft.Plan> plan = isDecrafter
+                ? Optional.empty()
+                : ContainerDecraft.plan(level, input, base);
+        if (plan.isEmpty()) {
+            if (resolved.isEmpty() && !isDecrafter && waitingForMoreInput(input)) {
                 return;
             }
             passThrough(input);
             return;
         }
         resetShortStackWait();
-        ResolvedDecraft op = resolved.get();
+        ContainerDecraft.Plan op = plan.get();
         List<ItemStack> outputs = op.outputs();
-        if (outputs == null || outputs.isEmpty()) {
+        int consume = op.consume();
+        if (consume <= 0 || input.getCount() < consume) {
+            return;
+        }
+        if (!fits(outputs, true)) {
+            // Even nine empty output slots could not hold contents + results (a full shulker box):
+            // keep the container whole and move it on instead of blocking the input forever.
             passThrough(input);
             return;
         }
-        if (!canInsertAll(outputs)) {
+        if (!fits(outputs, false)) {
             return;
         }
-
-        int consume = op.consumeCount();
-        if (consume <= 0 || input.getCount() < consume) {
+        if (!ContainerDecraft.insertAllOrNothing(outputInsertView(), outputs)) {
             return;
         }
         input.shrink(consume);
         items.setStackInSlot(INPUT_SLOT, input.isEmpty() ? ItemStack.EMPTY : input);
-
-        for (ItemStack out : outputs) {
-            ItemHandlerHelper.insertItemStacked(outputInsertView(), out.copy(), false);
-        }
+        op.afterCommit().run();
         setChanged();
     }
 
@@ -544,10 +556,10 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         return out;
     }
 
-    private boolean canInsertAll(List<ItemStack> outputs) {
+    private boolean fits(List<ItemStack> outputs, boolean assumeEmptyOutputs) {
         ItemStack[] sim = new ItemStack[OUTPUT_SLOTS];
         for (int i = 0; i < OUTPUT_SLOTS; i++) {
-            sim[i] = items.getStackInSlot(INPUT_SLOT + 1 + i).copy();
+            sim[i] = assumeEmptyOutputs ? ItemStack.EMPTY : items.getStackInSlot(INPUT_SLOT + 1 + i).copy();
         }
         for (ItemStack out : outputs) {
             ItemStack remaining = out.copy();
@@ -575,7 +587,7 @@ public class DecrafterBlockEntity extends BlockEntity implements MenuProvider {
         return true;
     }
 
-    private IItemHandler outputInsertView() {
+    private RangedWrapper outputInsertView() {
         return new RangedWrapper(items, INPUT_SLOT + 1, TOTAL_SLOTS);
     }
 

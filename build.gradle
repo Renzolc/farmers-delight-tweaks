@@ -27,6 +27,13 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+sourceSets {
+    gametest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
 neoForge {
     version = project.neo_version
 
@@ -36,6 +43,9 @@ neoForge {
     }
 
     accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Minecraft/NeoForge classes for the game-test source set.
+    addModdingDependenciesTo(sourceSets.gametest)
 
     runs {
         client {
@@ -47,6 +57,12 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
+        // Rule C end-to-end tests (src/gametest): ./gradlew runGameTestServer
+        gameTestServer {
+            type = "gameTestServer"
+            sourceSet = sourceSets.gametest
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             logLevel = org.slf4j.event.Level.DEBUG
@@ -56,12 +72,23 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            // Game tests are part of the mod in dev runs only; the jar is built from main alone.
+            sourceSet(sourceSets.gametest)
         }
+    }
+
+    // JUnit tests run inside a bootstrapped game (registries, components, codecs) via FML's JUnit support.
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
     }
 }
 
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    gametestImplementation.extendsFrom implementation
+    gametestCompileOnly.extendsFrom compileOnly
+    gametestRuntimeClasspath.extendsFrom runtimeClasspath
 }
 
 dependencies {
@@ -69,6 +96,33 @@ dependencies {
     compileOnly files('libs/FarmersDelight.jar')
     // Optional Sophisticated Backpacks upgrade API. Not shipped; present at runtime when that mod is loaded.
     compileOnly files('libs/sophisticatedcore.jar', 'libs/sophisticatedbackpacks.jar')
+
+    // Tests: Farmer's Delight is a required dependency of this mod, so the test game loads it too.
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly files('libs/FarmersDelight.jar')
+    gametestRuntimeOnly files('libs/FarmersDelight.jar')
+}
+
+// Rule C coverage: every container item found in the modpack scan is emptied by a reader or passes through.
+// Skipped when the scan folder (proposals.csv + jars/) is not present on this machine.
+def decraftScan = providers.environmentVariable('FD_DECRAFT_SCAN').orElse('/workspace/fd-decraft-scan').get()
+tasks.register('checkContainerCoverage', Exec) {
+    group = 'verification'
+    description = 'Checks that every container item in the pack scan is emptied or passes through (Rule C).'
+    inputs.file('src/main/resources/fd_storage_compat/container_rules.json')
+    inputs.file('scripts/check_container_coverage.py')
+    onlyIf { new File(decraftScan, 'proposals.csv').exists() }
+    commandLine 'python3', 'scripts/check_container_coverage.py', '--scan', decraftScan
+}
+tasks.named('check') { dependsOn 'checkContainerCoverage' }
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

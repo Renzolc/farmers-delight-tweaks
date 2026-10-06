@@ -31,6 +31,8 @@ public class FdStorageCompat {
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
         ModRecipeTypes.SERIALIZERS.register(modEventBus);
         modEventBus.addListener(this::registerCapabilities);
+        // Rule C: never cut a storage item that still holds something on a Farmer's Delight cutting board.
+        dev.renzo.fdstoragecompat.contents.CuttingBoardGuard.register();
         if (ModList.get().isLoaded("sophisticatedbackpacks")) {
             dev.renzo.fdstoragecompat.compat.sb.DecrafterUpgradeSetup.init(modEventBus);
             if (FMLEnvironment.dist == Dist.CLIENT) {
